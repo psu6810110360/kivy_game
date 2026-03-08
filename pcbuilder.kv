@@ -24,7 +24,7 @@
 
         # Top Info Bar - Wallet & Reputation
         BoxLayout:
-            size_hint_y: 0.08
+            size_hint_y: 0.15
             padding: 10
             spacing: 10
             canvas.before:
@@ -78,15 +78,30 @@
                     font_size: '14sp'
                     bold: True
                     color: (0.5, 0.5, 0.5, 1)
-                    size_hint_y: 0.3
+                    size_hint_y: 0.2
                 Label:
                     text: root.current_order
                     font_size: '15sp'
                     bold: True
                     color: (0.2, 1, 1, 1)
-                    size_hint_y: 0.35
+                    size_hint_y: 0.2
+                Label:
+                    text: root.required_cpu_display
+                    font_size: '12sp'
+                    color: (0.8, 0.8, 0.8, 1)
+                    size_hint_y: 0.15
+                Label:
+                    text: root.required_gpu_display
+                    font_size: '12sp'
+                    color: (0.8, 0.8, 0.8, 1)
+                    size_hint_y: 0.15
+                Label:
+                    text: root.required_ram_display
+                    font_size: '12sp'
+                    color: (0.8, 0.8, 0.8, 1)
+                    size_hint_y: 0.15
                 BoxLayout:
-                    size_hint_y: 0.35
+                    size_hint_y: 0.15
                     spacing: 5
                     Label:
                         text: "Build: $" + str(int(root.current_build_cost))

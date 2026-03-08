@@ -22,6 +22,10 @@ class MainGame(Screen):
     current_build_cost = NumericProperty(0)
     budget_remaining = NumericProperty(0)
 
+    required_cpu_display = StringProperty("")
+    required_gpu_display = StringProperty("")
+    required_ram_display = StringProperty("")
+
     installed_cpu = StringProperty("None")
     installed_mb = StringProperty("None")
     installed_psu = StringProperty("None")
@@ -233,7 +237,10 @@ class MainGame(Screen):
         required_cpu = self.current_order_specs["required_cpu"]
         required_gpu = self.current_order_specs["required_gpu"]
         required_ram = self.current_order_specs["required_ram"]
-        self.current_order = f"{order_name} - Budget: ${budget}\nRequired CPU: {required_cpu}\nRequired GPU: {required_gpu}\nRequired RAM: {required_ram}"
+        self.current_order = f"{order_name} - Budget: ${budget}"
+        self.required_cpu_display = f"CPU: {required_cpu}"
+        self.required_gpu_display = f"GPU: {required_gpu}"
+        self.required_ram_display = f"RAM: {required_ram}"
         self.budget_remaining = budget
         self.current_build_cost = 0
         self.log_message = f"New order: {order_name}"
