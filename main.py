@@ -174,53 +174,76 @@ class MainGame(Screen):
                 "watt": 230,
             },
             {
-                "name": "H610M (LGA1700)",
+                "name": "H610M DDR4 (LGA1700)",
                 "price": 80,
                 "type": "MB",
                 "socket": "LGA1700",
                 "watt": 30,
+                "ram_type": "DDR4",
             },
             {
-                "name": "B760 Pro (LGA1700)",
-                "price": 140,
+                "name": "B760M DDR4 (LGA1700)",
+                "price": 130,
                 "type": "MB",
                 "socket": "LGA1700",
-                "watt": 30,
+                "watt": 35,
+                "ram_type": "DDR4",
             },
             {
-                "name": "Z790 Elite (LGA1700)",
+                "name": "B760 Pro DDR5 (LGA1700)",
+                "price": 160,
+                "type": "MB",
+                "socket": "LGA1700",
+                "watt": 35,
+                "ram_type": "DDR5",
+            },
+            {
+                "name": "Z790 Elite DDR5 (LGA1700)",
                 "price": 250,
                 "type": "MB",
                 "socket": "LGA1700",
                 "watt": 40,
+                "ram_type": "DDR5",
             },
             {
-                "name": "A520M (AM4)",
+                "name": "A520M DDR4 (AM4)",
                 "price": 70,
                 "type": "MB",
                 "socket": "AM4",
                 "watt": 30,
+                "ram_type": "DDR4",
             },
             {
-                "name": "B550 Steel Legend (AM4)",
+                "name": "B550 Steel Legend DDR4 (AM4)",
                 "price": 130,
                 "type": "MB",
                 "socket": "AM4",
-                "watt": 30,
+                "watt": 35,
+                "ram_type": "DDR4",
             },
             {
-                "name": "B650 Gaming (AM5)",
+                "name": "A620M DDR5 (AM5)",
+                "price": 100,
+                "type": "MB",
+                "socket": "AM5",
+                "watt": 30,
+                "ram_type": "DDR5",
+            },
+            {
+                "name": "B650 Gaming DDR5 (AM5)",
                 "price": 180,
                 "type": "MB",
                 "socket": "AM5",
                 "watt": 35,
+                "ram_type": "DDR5",
             },
             {
-                "name": "X670E Taichi (AM5)",
+                "name": "X670E Taichi DDR5 (AM5)",
                 "price": 350,
                 "type": "MB",
                 "socket": "AM5",
                 "watt": 40,
+                "ram_type": "DDR5",
             },
             {"name": "GTX 1650", "price": 150, "type": "GPU", "watt": 75},
             {"name": "RTX 3060", "price": 280, "type": "GPU", "watt": 170},
@@ -230,11 +253,48 @@ class MainGame(Screen):
             {"name": "RTX 4090", "price": 1800, "type": "GPU", "watt": 450},
             {"name": "RX 6600", "price": 200, "type": "GPU", "watt": 132},
             {"name": "RX 7800 XT", "price": 500, "type": "GPU", "watt": 263},
-            {"name": "8GB DDR4", "price": 25, "type": "RAM", "watt": 5},
-            {"name": "16GB DDR4", "price": 45, "type": "RAM", "watt": 10},
-            {"name": "32GB DDR4", "price": 70, "type": "RAM", "watt": 15},
-            {"name": "32GB DDR5", "price": 100, "type": "RAM", "watt": 15},
-            {"name": "64GB DDR5", "price": 200, "type": "RAM", "watt": 25},
+            {
+                "name": "8GB DDR4",
+                "price": 25,
+                "type": "RAM",
+                "watt": 5,
+                "ram_type": "DDR4",
+            },
+            {
+                "name": "16GB DDR4",
+                "price": 45,
+                "type": "RAM",
+                "watt": 10,
+                "ram_type": "DDR4",
+            },
+            {
+                "name": "32GB DDR4",
+                "price": 70,
+                "type": "RAM",
+                "watt": 15,
+                "ram_type": "DDR4",
+            },
+            {
+                "name": "16GB DDR5",
+                "price": 60,
+                "type": "RAM",
+                "watt": 10,
+                "ram_type": "DDR5",
+            },
+            {
+                "name": "32GB DDR5",
+                "price": 100,
+                "type": "RAM",
+                "watt": 15,
+                "ram_type": "DDR5",
+            },
+            {
+                "name": "64GB DDR5",
+                "price": 200,
+                "type": "RAM",
+                "watt": 25,
+                "ram_type": "DDR5",
+            },
             {"name": "500W PSU", "price": 50, "type": "PSU", "watt_limit": 500},
             {"name": "650W PSU", "price": 75, "type": "PSU", "watt_limit": 650},
             {"name": "750W PSU", "price": 90, "type": "PSU", "watt_limit": 750},
@@ -346,6 +406,19 @@ class MainGame(Screen):
         if part_type == "MB" and self.installed_parts["CPU"]:
             if item["socket"] != self.installed_parts["CPU"]["socket"]:
                 self.log_message = "Socket mismatch with CPU!"
+                return
+
+        if part_type == "RAM" and self.installed_parts["MB"]:
+            if item["ram_type"] != self.installed_parts["MB"]["ram_type"]:
+                self.log_message = (
+                    f"RAM mismatch! Needs {self.installed_parts['MB']['ram_type']}."
+                )
+                return
+        if part_type == "MB" and self.installed_parts["RAM"]:
+            if item["ram_type"] != self.installed_parts["RAM"]["ram_type"]:
+                self.log_message = (
+                    f"MB mismatch! RAM is {self.installed_parts['RAM']['ram_type']}."
+                )
                 return
 
         old_part = self.installed_parts[part_type]
