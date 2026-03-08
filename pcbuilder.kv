@@ -1,4 +1,3 @@
-# สร้าง Template สำหรับปุ่มเลือกหมวดหมู่ให้ดูทันสมัย
 <MenuButton@Button>:
     background_color: (0, 0, 0, 0)
     background_normal: ''
@@ -35,7 +34,7 @@
         orientation: 'vertical'
         canvas.before:
             Color:
-                rgba: (0.05, 0.05, 0.07, 1) # พื้นหลังหลักสีเข้มขึ้นให้ดูลึก
+                rgba: (0.05, 0.05, 0.07, 1)
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -52,13 +51,11 @@
                     bold: True
                     on_release: root.reset_game()
 
-        # Top Info Bar - Wallet & Reputation (สไตล์ Card)
         BoxLayout:
             size_hint_y: 0.18
             padding: 15
             spacing: 15
             
-            # Section: เงินและชื่อเสียง
             BoxLayout:
                 orientation: 'horizontal'
                 size_hint_x: 0.5
@@ -72,7 +69,6 @@
                         size: self.size
                         radius: [15]
                 
-                # Wallet
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
@@ -91,7 +87,6 @@
                         text_size: self.size
                         halign: 'left'
                 
-                # Reputation
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
@@ -118,7 +113,6 @@
                             halign: 'right'
                             valign: 'middle'
             
-            # Section: Current Order
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: 0.5
@@ -150,13 +144,13 @@
                 BoxLayout:
                     size_hint_y: 0.35
                     Label:
-                        text: f"{root.required_cpu_display}\n{root.required_gpu_display}\n{root.required_ram_display}"
+                        text: f"{root.required_cpu_display}\n{root.required_gpu_display}\n{root.required_ram_display}\n{root.required_storage_display}"
                         font_size: '11sp'
                         color: (0.8, 0.8, 0.8, 1)
                         text_size: self.size
                         halign: 'left'
                         valign: 'middle'
-                        line_height: 1.2
+                        line_height: 1.1
                 
                 BoxLayout:
                     size_hint_y: 0.2
@@ -175,7 +169,6 @@
                         text_size: self.size
                         halign: 'right'
 
-        # Log Message Bar
         Label:
             size_hint_y: 0.05
             text: root.log_message
@@ -189,13 +182,11 @@
                     pos: self.pos
                     size: self.size
 
-        # Main Workspace
         BoxLayout:
             orientation: 'horizontal'
             padding: 15
             spacing: 15
 
-            # --- Panel 1: Shop & Inventory ---
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: 0.32
@@ -219,8 +210,9 @@
                     halign: 'left'
                     valign: 'middle'
                 
-                BoxLayout:
-                    size_hint_y: 0.08
+                GridLayout:
+                    cols: 4
+                    size_hint_y: 0.15
                     spacing: 5
                     MenuButton:
                         text: "CPU"
@@ -237,6 +229,12 @@
                     MenuButton:
                         text: "PSU"
                         on_release: root.set_category('PSU')
+                    MenuButton:
+                        text: "STRG"
+                        on_release: root.set_category('Storage')
+                    MenuButton:
+                        text: "CASE"
+                        on_release: root.set_category('Case')
                     MenuButton:
                         text: "ALL"
                         on_release: root.set_category('all')
@@ -255,7 +253,6 @@
                         height: self.minimum_height
                         spacing: 8
 
-            # --- Panel 2: Assembly Bench ---
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: 0.38
@@ -282,20 +279,19 @@
                 ScrollView:
                     GridLayout:
                         cols: 1
-                        spacing: 10
+                        spacing: 8
                         size_hint_y: None
                         height: self.minimum_height
                         
-                        # สร้าง Template ย่อยด้วยข้อความธรรมดา แต่จัดสวยๆ
                         Label:
                             text: "  [color=#888888]CPU:[/color]  " + root.installed_cpu
                             markup: True
                             size_hint_y: None
-                            height: 45
+                            height: 40
                             text_size: self.size
                             halign: 'left'
                             valign: 'middle'
-                            font_size: '14sp'
+                            font_size: '13sp'
                             bold: True
                             canvas.before:
                                 Color:
@@ -308,11 +304,11 @@
                             text: "  [color=#888888]MB:[/color]  " + root.installed_mb
                             markup: True
                             size_hint_y: None
-                            height: 45
+                            height: 40
                             text_size: self.size
                             halign: 'left'
                             valign: 'middle'
-                            font_size: '14sp'
+                            font_size: '13sp'
                             bold: True
                             canvas.before:
                                 Color:
@@ -325,11 +321,11 @@
                             text: "  [color=#888888]GPU:[/color]  " + root.installed_gpu
                             markup: True
                             size_hint_y: None
-                            height: 45
+                            height: 40
                             text_size: self.size
                             halign: 'left'
                             valign: 'middle'
-                            font_size: '14sp'
+                            font_size: '13sp'
                             bold: True
                             canvas.before:
                                 Color:
@@ -342,11 +338,28 @@
                             text: "  [color=#888888]RAM:[/color]  " + root.installed_ram
                             markup: True
                             size_hint_y: None
-                            height: 45
+                            height: 40
                             text_size: self.size
                             halign: 'left'
                             valign: 'middle'
-                            font_size: '14sp'
+                            font_size: '13sp'
+                            bold: True
+                            canvas.before:
+                                Color:
+                                    rgba: (0.18, 0.2, 0.25, 1)
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [8]
+                        Label:
+                            text: "  [color=#888888]STRG:[/color]  " + root.installed_storage
+                            markup: True
+                            size_hint_y: None
+                            height: 40
+                            text_size: self.size
+                            halign: 'left'
+                            valign: 'middle'
+                            font_size: '13sp'
                             bold: True
                             canvas.before:
                                 Color:
@@ -359,11 +372,28 @@
                             text: "  [color=#888888]PSU:[/color]  " + root.installed_psu
                             markup: True
                             size_hint_y: None
-                            height: 45
+                            height: 40
                             text_size: self.size
                             halign: 'left'
                             valign: 'middle'
-                            font_size: '14sp'
+                            font_size: '13sp'
+                            bold: True
+                            canvas.before:
+                                Color:
+                                    rgba: (0.18, 0.2, 0.25, 1)
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [8]
+                        Label:
+                            text: "  [color=#888888]CASE:[/color]  " + root.installed_case
+                            markup: True
+                            size_hint_y: None
+                            height: 40
+                            text_size: self.size
+                            halign: 'left'
+                            valign: 'middle'
+                            font_size: '13sp'
                             bold: True
                             canvas.before:
                                 Color:
@@ -373,7 +403,6 @@
                                     size: self.size
                                     radius: [8]
 
-            # --- Panel 3: Controls & Specs ---
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: 0.3
@@ -397,7 +426,6 @@
                     halign: 'left'
                     valign: 'middle'
                 
-                # Power Draw
                 BoxLayout:
                     orientation: 'vertical'
                     size_hint_y: 0.3
@@ -431,7 +459,6 @@
                             value: root.total_wattage
                             size_hint_x: 0.6
                 
-                # Status
                 BoxLayout:
                     orientation: 'vertical'
                     size_hint_y: 0.25
@@ -458,11 +485,9 @@
                         halign: 'left'
                         valign: 'middle'
                 
-                # Spacer
                 Widget:
                     size_hint_y: 0.1
 
-                # Sell Button (ทำสีเขียวเด่นๆ)
                 Button:
                     text: "✓ FULFILL ORDER"
                     background_color: (0, 0, 0, 0)
