@@ -1,358 +1,481 @@
+# สร้าง Template สำหรับปุ่มเลือกหมวดหมู่ให้ดูทันสมัย
+<MenuButton@Button>:
+    background_color: (0, 0, 0, 0)
+    background_normal: ''
+    bold: True
+    color: (0.9, 0.9, 0.9, 1)
+    canvas.before:
+        Color:
+            rgba: (0.2, 0.25, 0.35, 1) if self.state == 'normal' else (0.1, 0.6, 0.8, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [8]
+
 <PartButton@Button>:
     size_hint_y: None
     height: "60dp"
-    background_color: (0.2, 0.6, 1, 1)
+    background_color: (0, 0, 0, 0)
+    background_normal: ''
+    color: (1, 1, 1, 1)
+    bold: True
+    text_size: self.width - 20, None
+    halign: 'left'
+    valign: 'middle'
+    canvas.before:
+        Color:
+            rgba: (0.18, 0.22, 0.28, 1) if self.state == 'normal' else (0.1, 0.5, 0.8, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10]
 
 <MainGame>:
     BoxLayout:
         orientation: 'vertical'
         canvas.before:
             Color:
-                rgba: (0.08, 0.08, 0.1, 1)
+                rgba: (0.05, 0.05, 0.07, 1) # พื้นหลังหลักสีเข้มขึ้นให้ดูลึก
             Rectangle:
                 pos: self.pos
                 size: self.size
 
         ActionBar:
+            background_color: (0.1, 0.1, 0.15, 1)
             ActionView:
                 ActionPrevious: 
-                    title: "PC BUILDER TYCOON - Request Mode"
+                    title: "PC BUILDER TYCOON - Workshop"
                     with_previous: False
+                    app_icon: '' 
                 ActionButton: 
                     text: "NEW GAME"
+                    bold: True
                     on_release: root.reset_game()
 
-        # Top Info Bar - Wallet & Reputation
+        # Top Info Bar - Wallet & Reputation (สไตล์ Card)
         BoxLayout:
-            size_hint_y: 0.15
-            padding: 10
-            spacing: 10
-            canvas.before:
-                Color:
-                    rgba: (0.15, 0.15, 0.18, 1)
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
+            size_hint_y: 0.18
+            padding: 15
+            spacing: 15
             
+            # Section: เงินและชื่อเสียง
             BoxLayout:
-                orientation: 'vertical'
-                size_hint_x: 0.25
-                Label:
-                    text: " WALLET"
-                    font_size: '14sp'
-                    bold: True
-                    color: (0.5, 0.5, 0.5, 1)
-                    size_hint_y: 0.4
-                Label:
-                    text: "$" + str(int(root.money))
-                    font_size: '22sp'
-                    bold: True
-                    color: (0, 1, 0.5, 1)
-            
-            BoxLayout:
-                orientation: 'vertical'
-                size_hint_x: 0.25
-                Label:
-                    text: " REPUTATION"
-                    font_size: '14sp'
-                    bold: True
-                    color: (0.5, 0.5, 0.5, 1)
-                    size_hint_y: 0.4
+                orientation: 'horizontal'
+                size_hint_x: 0.5
+                padding: 15
+                spacing: 10
+                canvas.before:
+                    Color:
+                        rgba: (0.12, 0.12, 0.15, 1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [15]
+                
+                # Wallet
                 BoxLayout:
-                    ProgressBar:
-                        max: 100
-                        value: root.reputation
-                        size_hint_x: 0.7
+                    orientation: 'vertical'
                     Label:
-                        text: str(int(root.reputation)) + "/100"
-                        font_size: '16sp'
+                        text: "WALLET"
+                        font_size: '12sp'
                         bold: True
-                        color: (1, 0.8, 0, 1)
-                        size_hint_x: 0.3
+                        color: (0.5, 0.5, 0.6, 1)
+                        size_hint_y: 0.3
+                        text_size: self.size
+                        halign: 'left'
+                    Label:
+                        text: "$" + f"{int(root.money):,}"
+                        font_size: '26sp'
+                        bold: True
+                        color: (0.2, 0.9, 0.5, 1)
+                        text_size: self.size
+                        halign: 'left'
+                
+                # Reputation
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: "REPUTATION"
+                        font_size: '12sp'
+                        bold: True
+                        color: (0.5, 0.5, 0.6, 1)
+                        size_hint_y: 0.3
+                        text_size: self.size
+                        halign: 'left'
+                    BoxLayout:
+                        spacing: 10
+                        ProgressBar:
+                            max: 100
+                            value: root.reputation
+                            size_hint_x: 0.7
+                        Label:
+                            text: str(int(root.reputation)) + "%"
+                            font_size: '18sp'
+                            bold: True
+                            color: (1, 0.8, 0.2, 1)
+                            size_hint_x: 0.3
+                            text_size: self.size
+                            halign: 'right'
+                            valign: 'middle'
             
+            # Section: Current Order
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: 0.5
+                padding: [15, 10, 15, 10]
+                canvas.before:
+                    Color:
+                        rgba: (0.12, 0.12, 0.15, 1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [15]
                 Label:
                     text: "📋 CURRENT ORDER"
-                    font_size: '14sp'
+                    font_size: '12sp'
                     bold: True
-                    color: (0.5, 0.5, 0.5, 1)
+                    color: (0.5, 0.5, 0.6, 1)
                     size_hint_y: 0.2
+                    text_size: self.size
+                    halign: 'left'
                 Label:
                     text: root.current_order
-                    font_size: '15sp'
+                    font_size: '16sp'
                     bold: True
-                    color: (0.2, 1, 1, 1)
-                    size_hint_y: 0.2
-                Label:
-                    text: root.required_cpu_display
-                    font_size: '12sp'
-                    color: (0.8, 0.8, 0.8, 1)
-                    size_hint_y: 0.15
-                Label:
-                    text: root.required_gpu_display
-                    font_size: '12sp'
-                    color: (0.8, 0.8, 0.8, 1)
-                    size_hint_y: 0.15
-                Label:
-                    text: root.required_ram_display
-                    font_size: '12sp'
-                    color: (0.8, 0.8, 0.8, 1)
-                    size_hint_y: 0.15
+                    color: (0.2, 0.8, 1, 1)
+                    size_hint_y: 0.25
+                    text_size: self.size
+                    halign: 'left'
+                
                 BoxLayout:
-                    size_hint_y: 0.15
-                    spacing: 5
+                    size_hint_y: 0.35
+                    Label:
+                        text: f"{root.required_cpu_display}\n{root.required_gpu_display}\n{root.required_ram_display}"
+                        font_size: '11sp'
+                        color: (0.8, 0.8, 0.8, 1)
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
+                        line_height: 1.2
+                
+                BoxLayout:
+                    size_hint_y: 0.2
                     Label:
                         text: "Build: $" + str(int(root.current_build_cost))
                         font_size: '12sp'
                         bold: True
-                        color: (1, 0.5, 0.2, 1)
-                        size_hint_x: 0.4
+                        color: (1, 0.6, 0.2, 1)
+                        text_size: self.size
+                        halign: 'left'
                     Label:
                         text: "Remain: $" + str(int(root.budget_remaining))
                         font_size: '12sp'
                         bold: True
-                        color: (0, 1, 0.5, 1) if root.budget_remaining >= 0 else (1, 0, 0, 1)
-                        size_hint_x: 0.4
-                    Label:
-                        text: ("✓ BUDGET OK" if root.budget_remaining >= 0 else "✗ OVER")
-                        font_size: '12sp'
-                        bold: True
-                        color: (0, 1, 0.5, 1) if root.budget_remaining >= 0 else (1, 0, 0, 1)
+                        color: (0.2, 0.9, 0.5, 1) if root.budget_remaining >= 0 else (1, 0.3, 0.3, 1)
+                        text_size: self.size
+                        halign: 'right'
 
-        # Log Message
+        # Log Message Bar
         Label:
-            size_hint_y: 0.06
+            size_hint_y: 0.05
             text: root.log_message
-            font_size: '16sp'
+            font_size: '14sp'
             bold: True
-            color: (0.2, 1, 0.2, 1)
+            color: (1, 1, 1, 1)
             canvas.before:
                 Color:
-                    rgba: (0.12, 0.12, 0.15, 1)
+                    rgba: (0.1, 0.5, 0.3, 1) if "✓" in root.log_message else ((0.8, 0.2, 0.2, 1) if "mismatch" in root.log_message or "Not enough" in root.log_message else (0.2, 0.4, 0.8, 1))
                 Rectangle:
                     pos: self.pos
                     size: self.size
 
+        # Main Workspace
         BoxLayout:
             orientation: 'horizontal'
-            padding: 5
-            spacing: 5
+            padding: 15
+            spacing: 15
 
-            # Shop & Inventory
+            # --- Panel 1: Shop & Inventory ---
             BoxLayout:
                 orientation: 'vertical'
-                size_hint_x: 0.28
+                size_hint_x: 0.32
+                padding: 10
+                spacing: 10
                 canvas.before:
                     Color:
-                        rgba: (0.15, 0.15, 0.18, 1)
-                    Rectangle:
+                        rgba: (0.12, 0.12, 0.15, 1)
+                    RoundedRectangle:
                         pos: self.pos
                         size: self.size
+                        radius: [15]
                 
                 Label: 
                     text: "🛒 PARTS SHOP"
-                    size_hint_y: 0.08
-                    font_size: '16sp'
+                    size_hint_y: 0.05
+                    font_size: '14sp'
                     bold: True
-                    color: (0.2, 1, 1, 1)
+                    color: (0.9, 0.9, 0.9, 1)
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'middle'
                 
                 BoxLayout:
                     size_hint_y: 0.08
-                    spacing: 3
-                    padding: 3
-                    Button:
-                        text: "CPUs"
+                    spacing: 5
+                    MenuButton:
+                        text: "CPU"
                         on_release: root.set_category('CPU')
-                        background_color: (0.2, 0.5, 0.8, 1)
-                    Button:
+                    MenuButton:
                         text: "MB"
                         on_release: root.set_category('MB')
-                        background_color: (0.2, 0.5, 0.8, 1)
-                    Button:
-                        text: "GPUs"
+                    MenuButton:
+                        text: "GPU"
                         on_release: root.set_category('GPU')
-                        background_color: (0.2, 0.5, 0.8, 1)
-                    Button:
+                    MenuButton:
                         text: "RAM"
                         on_release: root.set_category('RAM')
-                        background_color: (0.2, 0.5, 0.8, 1)
-                    Button:
+                    MenuButton:
                         text: "PSU"
                         on_release: root.set_category('PSU')
-                        background_color: (0.2, 0.5, 0.8, 1)
-                    Button:
-                        text: "All"
+                    MenuButton:
+                        text: "ALL"
                         on_release: root.set_category('all')
-                        background_color: (0.3, 0.6, 0.3, 1)
+                        canvas.before:
+                            Color:
+                                rgba: (0.2, 0.6, 0.4, 1) if self.state == 'normal' else (0.1, 0.8, 0.5, 1)
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [8]
                 
                 ScrollView:
                     StackLayout:
                         id: shop_list
                         size_hint_y: None
                         height: self.minimum_height
-                        padding: 5
-                        spacing: 5
+                        spacing: 8
 
-            # Assembly Bench
+            # --- Panel 2: Assembly Bench ---
             BoxLayout:
                 orientation: 'vertical'
-                size_hint_x: 0.36
+                size_hint_x: 0.38
+                padding: 15
+                spacing: 10
                 canvas.before:
                     Color:
                         rgba: (0.12, 0.12, 0.15, 1)
-                    Rectangle:
+                    RoundedRectangle:
                         pos: self.pos
                         size: self.size
+                        radius: [15]
                 
                 Label:
                     text: "🔧 ASSEMBLY BENCH"
-                    size_hint_y: 0.08
-                    font_size: '16sp'
+                    size_hint_y: 0.05
+                    font_size: '14sp'
                     bold: True
-                    color: (1, 0.8, 0, 1)
+                    color: (0.9, 0.9, 0.9, 1)
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'middle'
                 
                 ScrollView:
                     GridLayout:
                         cols: 1
-                        spacing: 8
-                        padding: 10
+                        spacing: 10
                         size_hint_y: None
                         height: self.minimum_height
                         
-                        BoxLayout:
+                        # สร้าง Template ย่อยด้วยข้อความธรรมดา แต่จัดสวยๆ
+                        Label:
+                            text: "  [color=#888888]CPU:[/color]  " + root.installed_cpu
+                            markup: True
                             size_hint_y: None
-                            height: 35
-                            Label:
-                                text: "CPU: " + root.installed_cpu
-                                color: (0.2, 1, 0.8, 1)
-                                font_size: '13sp'
-                                canvas.before:
-                                    Color:
-                                        rgba: (0.2, 0.2, 0.25, 1)
-                                    Rectangle:
-                                        pos: self.pos
-                                        size: self.width, self.height
-                        
-                        BoxLayout:
+                            height: 45
+                            text_size: self.size
+                            halign: 'left'
+                            valign: 'middle'
+                            font_size: '14sp'
+                            bold: True
+                            canvas.before:
+                                Color:
+                                    rgba: (0.18, 0.2, 0.25, 1)
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [8]
+                        Label:
+                            text: "  [color=#888888]MB:[/color]  " + root.installed_mb
+                            markup: True
                             size_hint_y: None
-                            height: 35
-                            Label:
-                                text: "MB: " + root.installed_mb
-                                color: (0.2, 1, 0.8, 1)
-                                font_size: '13sp'
-                                canvas.before:
-                                    Color:
-                                        rgba: (0.2, 0.2, 0.25, 1)
-                                    Rectangle:
-                                        pos: self.pos
-                                        size: self.width, self.height
-                        
-                        BoxLayout:
+                            height: 45
+                            text_size: self.size
+                            halign: 'left'
+                            valign: 'middle'
+                            font_size: '14sp'
+                            bold: True
+                            canvas.before:
+                                Color:
+                                    rgba: (0.18, 0.2, 0.25, 1)
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [8]
+                        Label:
+                            text: "  [color=#888888]GPU:[/color]  " + root.installed_gpu
+                            markup: True
                             size_hint_y: None
-                            height: 35
-                            Label:
-                                text: "PSU: " + root.installed_psu
-                                color: (0.2, 1, 0.8, 1)
-                                font_size: '13sp'
-                                canvas.before:
-                                    Color:
-                                        rgba: (0.2, 0.2, 0.25, 1)
-                                    Rectangle:
-                                        pos: self.pos
-                                        size: self.width, self.height
-                        
-                        BoxLayout:
+                            height: 45
+                            text_size: self.size
+                            halign: 'left'
+                            valign: 'middle'
+                            font_size: '14sp'
+                            bold: True
+                            canvas.before:
+                                Color:
+                                    rgba: (0.18, 0.2, 0.25, 1)
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [8]
+                        Label:
+                            text: "  [color=#888888]RAM:[/color]  " + root.installed_ram
+                            markup: True
                             size_hint_y: None
-                            height: 35
-                            Label:
-                                text: "GPU: " + root.installed_gpu
-                                color: (0.2, 1, 0.8, 1)
-                                font_size: '13sp'
-                                canvas.before:
-                                    Color:
-                                        rgba: (0.2, 0.2, 0.25, 1)
-                                    Rectangle:
-                                        pos: self.pos
-                                        size: self.width, self.height
-                        
-                        BoxLayout:
+                            height: 45
+                            text_size: self.size
+                            halign: 'left'
+                            valign: 'middle'
+                            font_size: '14sp'
+                            bold: True
+                            canvas.before:
+                                Color:
+                                    rgba: (0.18, 0.2, 0.25, 1)
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [8]
+                        Label:
+                            text: "  [color=#888888]PSU:[/color]  " + root.installed_psu
+                            markup: True
                             size_hint_y: None
-                            height: 35
-                            Label:
-                                text: "RAM: " + root.installed_ram
-                                color: (0.2, 1, 0.8, 1)
-                                font_size: '13sp'
-                                canvas.before:
-                                    Color:
-                                        rgba: (0.2, 0.2, 0.25, 1)
-                                    Rectangle:
-                                        pos: self.pos
-                                        size: self.width, self.height
+                            height: 45
+                            text_size: self.size
+                            halign: 'left'
+                            valign: 'middle'
+                            font_size: '14sp'
+                            bold: True
+                            canvas.before:
+                                Color:
+                                    rgba: (0.18, 0.2, 0.25, 1)
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [8]
 
-            # Controls & Specs
+            # --- Panel 3: Controls & Specs ---
             BoxLayout:
                 orientation: 'vertical'
-                size_hint_x: 0.36
-                padding: 10
-                spacing: 10
+                size_hint_x: 0.3
+                padding: 15
+                spacing: 15
                 canvas.before:
                     Color:
-                        rgba: (0.15, 0.15, 0.18, 1)
-                    Rectangle:
+                        rgba: (0.12, 0.12, 0.15, 1)
+                    RoundedRectangle:
                         pos: self.pos
                         size: self.size
+                        radius: [15]
                 
                 Label:
                     text: "⚡ SYSTEM SPECS"
-                    size_hint_y: 0.08
-                    font_size: '16sp'
+                    size_hint_y: 0.05
+                    font_size: '14sp'
                     bold: True
-                    color: (1, 0.5, 0.2, 1)
+                    color: (0.9, 0.9, 0.9, 1)
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'middle'
                 
+                # Power Draw
                 BoxLayout:
                     orientation: 'vertical'
-                    spacing: 5
-                    size_hint_y: 0.25
-                    
+                    size_hint_y: 0.3
+                    canvas.before:
+                        Color:
+                            rgba: (0.16, 0.16, 0.2, 1)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [10]
+                    padding: 10
                     Label:
-                        text: "Power Draw"
-                        color: (0.7, 0.7, 0.7, 1)
+                        text: "Total Power Draw"
+                        color: (0.6, 0.6, 0.7, 1)
                         font_size: '12sp'
-                    
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'top'
                     BoxLayout:
                         Label:
                             text: str(int(root.total_wattage)) + "W"
-                            color: (0.2, 1, 0.5, 1)
-                            font_size: '16sp'
+                            color: (1, 0.3, 0.3, 1) if root.pc_status == "Power overload!" else (0.2, 0.9, 0.5, 1)
+                            font_size: '22sp'
                             bold: True
-                            size_hint_x: 0.3
+                            size_hint_x: 0.4
+                            text_size: self.size
+                            halign: 'left'
+                            valign: 'middle'
                         ProgressBar:
-                            max: 800
+                            max: 1200
                             value: root.total_wattage
-                            size_hint_x: 0.7
+                            size_hint_x: 0.6
                 
+                # Status
                 BoxLayout:
                     orientation: 'vertical'
-                    spacing: 3
-                    size_hint_y: 0.2
-                    
+                    size_hint_y: 0.25
+                    canvas.before:
+                        Color:
+                            rgba: (0.16, 0.16, 0.2, 1)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [10]
+                    padding: 10
                     Label:
-                        text: "Status"
-                        color: (0.7, 0.7, 0.7, 1)
+                        text: "Build Status"
+                        color: (0.6, 0.6, 0.7, 1)
                         font_size: '12sp'
-                    
+                        text_size: self.size
+                        halign: 'left'
                     Label:
                         text: root.pc_status
-                        color: (1, 1, 0, 1)
-                        font_size: '16sp'
+                        color: (0.2, 0.9, 0.5, 1) if root.pc_status == "Ready to sell!" else ((1, 0.3, 0.3, 1) if root.pc_status == "Power overload!" else (1, 0.8, 0.2, 1))
+                        font_size: '18sp'
                         bold: True
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
                 
+                # Spacer
+                Widget:
+                    size_hint_y: 0.1
+
+                # Sell Button (ทำสีเขียวเด่นๆ)
                 Button:
                     text: "✓ FULFILL ORDER"
-                    background_color: (0, 0.8, 0, 1)
-                    on_press: root.on_sell_pc()
-                    size_hint_y: 0.35
+                    background_color: (0, 0, 0, 0)
+                    background_normal: ''
+                    size_hint_y: 0.3
                     font_size: '16sp'
                     bold: True
+                    color: (1, 1, 1, 1)
+                    canvas.before:
+                        Color:
+                            rgba: (0.1, 0.7, 0.3, 1) if self.state == 'normal' else (0.05, 0.5, 0.2, 1)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [12]
+                    on_press: root.on_sell_pc()
