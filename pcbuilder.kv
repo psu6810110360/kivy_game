@@ -1,0 +1,42 @@
+<GameRoot>:
+    do_default_tab: False
+    
+    TabbedPanelItem:
+        text: "Shop"
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 20
+            spacing: 10
+            
+            Label:
+                text: f"Wallet: {root.money} THB"
+                font_size: 24
+            
+            # ตรงนี้ถ้าใช้ GridLayout แล้วใส่ Button เลือก CPU/GPU สัก 10-15 ปุ่ม 
+            # คุณจะเก็บจำนวน Widget ได้เร็วมาก!
+            GridLayout:
+                cols: 2
+                spacing: 10
+                
+                Button:
+                    text: "Core i5 (5,000 THB)"
+                    on_release: root.buy_part("i5", 5000, 50) # Callback
+                
+                Button:
+                    text: "Core i9 (18,000 THB)"
+                    on_release: root.buy_part("i9", 18000, 150) # Callback
+
+            Label:
+                text: f"PC Score: {root.pc_score}"
+            Label:
+                text: root.current_status
+                color: (0, 1, 0, 1)
+
+    TabbedPanelItem:
+        text: "Settings"
+        BoxLayout:
+            # ใส่ Slider, Switch, CheckBox ตรงนี้ให้ครบ 30 ชิ้น
+            Slider:
+                min: 0
+                max: 100
+                on_value: print("Volume changed")
