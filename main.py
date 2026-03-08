@@ -16,6 +16,10 @@ class GameRoot(TabbedPanel):
         else:
             self.current_status = "Not enough money!"
 
+    def reset_build(self):
+        self.pc_score = 0
+        self.current_status = "Build Reset"
+
 
 class PCBuilderApp(App):
     def build(self):
