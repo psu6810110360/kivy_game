@@ -19,6 +19,8 @@ class MainGame(Screen):
     reputation = NumericProperty(50)
     current_order = StringProperty("")
     order_reward = NumericProperty(0)
+    current_build_cost = NumericProperty(0)
+    budget_remaining = NumericProperty(0)
 
     installed_cpu = StringProperty("None")
     installed_mb = StringProperty("None")
@@ -229,6 +231,8 @@ class MainGame(Screen):
         order_name = self.current_order_specs["name"]
         budget = self.current_order_specs["budget"]
         self.current_order = f"{order_name} - Budget: ${budget}"
+        self.budget_remaining = budget
+        self.current_build_cost = 0
         self.log_message = f"New order: {order_name}"
 
     def check_order_requirements(self):
@@ -325,24 +329,93 @@ class MainGame(Screen):
             if item["type"] == "CPU":
                 if self.mb_socket and self.mb_socket != item["socket"]:
                     self.log_message = "Socket mismatch!"
+                    self.money += item["price"]
                     return
+                # Refund old CPU if exists
+                if self.installed_cpu != "None":
+                    for i in self.items:
+                        if i["name"] == self.installed_cpu:
+                            self.money += i["price"]
+                            self.total_wattage -= i["watt"]
+                            self.current_build_cost -= i["price"]
+                            break
                 self.installed_cpu = item["name"]
                 self.cpu_socket = item["socket"]
                 self.total_wattage += item["watt"]
+                self.current_build_cost += item["price"]
+                self.budget_remaining = (
+                    self.current_order_specs["budget"] - self.current_build_cost
+                    if self.current_order_specs
+                    else 0
+                )
             elif item["type"] == "MB":
                 if self.cpu_socket and self.cpu_socket != item["socket"]:
                     self.log_message = "Socket mismatch!"
+                    self.money += item["price"]
                     return
+                # Refund old MB if exists
+                if self.installed_mb != "None":
+                    for i in self.items:
+                        if i["name"] == self.installed_mb:
+                            self.money += i["price"]
+                            self.current_build_cost -= i["price"]
+                            break
                 self.installed_mb = item["name"]
                 self.mb_socket = item["socket"]
+                self.current_build_cost += item["price"]
+                self.budget_remaining = (
+                    self.current_order_specs["budget"] - self.current_build_cost
+                    if self.current_order_specs
+                    else 0
+                )
             elif item["type"] == "PSU":
+                # Refund old PSU if exists
+                if self.installed_psu != "None":
+                    for i in self.items:
+                        if i["name"] == self.installed_psu:
+                            self.money += i["price"]
+                            self.current_build_cost -= i["price"]
+                            break
                 self.installed_psu = item["name"]
                 self.psu_limit = item["watt_limit"]
+                self.current_build_cost += item["price"]
+                self.budget_remaining = (
+                    self.current_order_specs["budget"] - self.current_build_cost
+                    if self.current_order_specs
+                    else 0
+                )
             elif item["type"] == "GPU":
+                # Refund old GPU if exists
+                if self.installed_gpu != "None":
+                    for i in self.items:
+                        if i["name"] == self.installed_gpu:
+                            self.money += i["price"]
+                            self.total_wattage -= i["watt"]
+                            self.current_build_cost -= i["price"]
+                            break
                 self.installed_gpu = item["name"]
                 self.total_wattage += item["watt"]
+                self.current_build_cost += item["price"]
+                self.budget_remaining = (
+                    self.current_order_specs["budget"] - self.current_build_cost
+                    if self.current_order_specs
+                    else 0
+                )
             elif item["type"] == "RAM":
+                # Refund old RAM if exists
+                if self.installed_ram != "None":
+                    for i in self.items:
+                        if i["name"] == self.installed_ram:
+                            self.money += i["price"]
+                            self.current_build_cost -= i["price"]
+                            break
                 self.installed_ram = item["name"]
+                self.current_build_cost += item["price"]
+                self.budget_remaining = (
+                    self.current_order_specs["budget"] - self.current_build_cost
+                    if self.current_order_specs
+                    else 0
+                )
             self.update_status()
         else:
             self.log_message = "Not enough money!"
@@ -365,6 +438,8 @@ class MainGame(Screen):
     def reset_game(self):
         self.money = 3000
         self.reputation = 50
+        self.current_build_cost = 0
+        self.budget_remaining = 0
         self.installed_cpu = "None"
         self.installed_mb = "None"
         self.installed_psu = "None"
