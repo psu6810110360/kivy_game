@@ -41,41 +41,41 @@ class MainGame(Screen):
             {
                 "name": "Budget Gamer",
                 "budget": 1200,
-                "min_gpu": "GTX 1650",
-                "min_cpu": "Ryzen 5 5600X",
-                "min_ram": "16GB",
+                "required_gpu": "GTX 1650",
+                "required_cpu": "Ryzen 5 5600X (AM4)",
+                "required_ram": "16GB DDR4",
                 "reward_multiplier": 0.4,
             },
             {
                 "name": "Streaming Workstation",
                 "budget": 2000,
-                "min_gpu": "RTX 3060",
-                "min_cpu": "Core i7",
-                "min_ram": "32GB",
+                "required_gpu": "RTX 3060",
+                "required_cpu": "Core i7 (LGA1700)",
+                "required_ram": "32GB DDR4",
                 "reward_multiplier": 0.5,
             },
             {
                 "name": "High-End Gaming",
                 "budget": 2500,
-                "min_gpu": "RTX 4070",
-                "min_cpu": "Core i9",
-                "min_ram": "32GB",
+                "required_gpu": "RTX 4070",
+                "required_cpu": "Core i9 (LGA1700)",
+                "required_ram": "32GB DDR4",
                 "reward_multiplier": 0.6,
             },
             {
                 "name": "Office Build",
                 "budget": 800,
-                "min_gpu": "GTX 1650",
-                "min_cpu": "Core i3",
-                "min_ram": "8GB",
+                "required_gpu": "GTX 1650",
+                "required_cpu": "Core i3 (LGA1700)",
+                "required_ram": "8GB DDR4",
                 "reward_multiplier": 0.35,
             },
             {
                 "name": "Affordable Gaming",
                 "budget": 1500,
-                "min_gpu": "RTX 3060",
-                "min_cpu": "Ryzen 7 5800X",
-                "min_ram": "16GB",
+                "required_gpu": "RTX 3060",
+                "required_cpu": "Ryzen 7 5800X (AM4)",
+                "required_ram": "16GB DDR4",
                 "reward_multiplier": 0.45,
             },
         ]
@@ -230,7 +230,10 @@ class MainGame(Screen):
         self.current_order_specs = random.choice(self.customer_orders)
         order_name = self.current_order_specs["name"]
         budget = self.current_order_specs["budget"]
-        self.current_order = f"{order_name} - Budget: ${budget}"
+        required_cpu = self.current_order_specs["required_cpu"]
+        required_gpu = self.current_order_specs["required_gpu"]
+        required_ram = self.current_order_specs["required_ram"]
+        self.current_order = f"{order_name} - Budget: ${budget}\nRequired CPU: {required_cpu}\nRequired GPU: {required_gpu}\nRequired RAM: {required_ram}"
         self.budget_remaining = budget
         self.current_build_cost = 0
         self.log_message = f"New order: {order_name}"
@@ -256,15 +259,9 @@ class MainGame(Screen):
             return False, 0
 
         # Check component requirements
-        cpu_ok = (
-            specs["min_cpu"] in self.installed_cpu
-            or "Ryzen 9" in self.installed_cpu
-            or "Core i9" in self.installed_cpu
-        )
-        gpu_ok = (
-            specs["min_gpu"] in self.installed_gpu or "RTX 4070" in self.installed_gpu
-        )
-        ram_ok = specs["min_ram"] in self.installed_ram
+        cpu_ok = self.installed_cpu == specs["required_cpu"]
+        gpu_ok = self.installed_gpu == specs["required_gpu"]
+        ram_ok = self.installed_ram == specs["required_ram"]
 
         if cpu_ok and gpu_ok and ram_ok:
             return True, specs["reward_multiplier"]
