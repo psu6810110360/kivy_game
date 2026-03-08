@@ -13,8 +13,10 @@ Builder.load_file(os.path.join(current_dir, "pcbuilder.kv"))
 
 class MainGame(Screen):
     money = NumericProperty(3000)
+    current_day = NumericProperty(1)
+    daily_rent = NumericProperty(100)
     pc_status = StringProperty("Empty")
-    log_message = StringProperty("Welcome to the workshop!")
+    log_message = StringProperty("Welcome to the workshop! Don't go bankrupt!")
     reputation = NumericProperty(50)
     current_order = StringProperty("")
     order_reward = NumericProperty(0)
@@ -353,7 +355,9 @@ class MainGame(Screen):
         )
         self.budget_remaining = self.current_order_specs["budget"]
         self.current_build_cost = 0
-        self.log_message = f"New order: {self.current_order_specs['name']}"
+        self.log_message = (
+            f"Day {self.current_day} | New order: {self.current_order_specs['name']}"
+        )
 
     def check_order_requirements(self):
         if not self.current_order_specs:
@@ -387,15 +391,21 @@ class MainGame(Screen):
                 profit = sell_price - cost
                 self.money += sell_price
                 self.reputation = min(100, self.reputation + 5)
-                self.log_message = (
-                    f"Order fulfilled! Sold for ${sell_price}! Profit: ${profit}"
-                )
+                log_txt = f"Sold for ${sell_price}! Profit: ${profit}"
             else:
                 reputation_penalty = 1 - (self.reputation - 50) * 0.01
                 sell_price = int(cost * (1.3 * reputation_penalty))
                 self.money += sell_price
                 self.reputation = max(0, self.reputation - 2)
-                self.log_message = f"Order not fulfilled. Sold for ${sell_price}. Rep: {self.reputation}/100"
+                log_txt = f"Failed order. Sold: ${sell_price}. Rep: {self.reputation}"
+
+            self.current_day += 1
+            self.money -= self.daily_rent
+
+            if self.money < 0:
+                self.log_message = "BANKRUPT! You are out of money. Please Reset Game."
+            else:
+                self.log_message = f"{log_txt} | Rent Paid: ${self.daily_rent}"
 
             self.installed_parts = {
                 "CPU": None,
@@ -417,11 +427,56 @@ class MainGame(Screen):
             self.current_build_cost = 0
 
             self.update_status()
-            self.generate_new_order()
+            if self.money >= 0:
+                self.generate_new_order()
         else:
             self.log_message = "PC not ready to sell!"
 
+    def skip_day(self):
+        if self.money < 0:
+            self.log_message = "BANKRUPT! You cannot skip. Reset Game."
+            return
+
+        for key, item in self.installed_parts.items():
+            if item:
+                self.money += item["price"]
+
+        self.current_day += 1
+        self.money -= self.daily_rent
+        self.reputation = max(0, self.reputation - 5)
+
+        if self.money < 0:
+            self.log_message = f"Order skipped. BANKRUPT! Rent Paid: ${self.daily_rent}"
+        else:
+            self.log_message = f"Order skipped. Day {self.current_day}. Rent paid: ${self.daily_rent}. Rep -5"
+
+        self.installed_parts = {
+            "CPU": None,
+            "MB": None,
+            "GPU": None,
+            "RAM": None,
+            "PSU": None,
+            "Storage": None,
+            "Case": None,
+        }
+        self.installed_cpu = "None"
+        self.installed_mb = "None"
+        self.installed_psu = "None"
+        self.installed_gpu = "None"
+        self.installed_ram = "None"
+        self.installed_storage = "None"
+        self.installed_case = "None"
+        self.total_wattage = self.base_system_watt
+        self.current_build_cost = 0
+
+        self.update_status()
+        if self.money >= 0:
+            self.generate_new_order()
+
     def buy_part(self, item):
+        if self.money < 0:
+            return
+
         part_type = item["type"]
 
         if self.money < item["price"]:
@@ -503,6 +558,7 @@ class MainGame(Screen):
 
     def reset_game(self):
         self.money = 3000
+        self.current_day = 1
         self.reputation = 50
         self.current_build_cost = 0
         self.total_wattage = self.base_system_watt
@@ -523,7 +579,7 @@ class MainGame(Screen):
         self.installed_storage = "None"
         self.installed_case = "None"
         self.pc_status = "Empty"
-        self.log_message = "Game reset!"
+        self.log_message = "Game reset! Good luck!"
 
         self.ids.shop_list.clear_widgets()
         self.populate_shop(0)
