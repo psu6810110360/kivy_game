@@ -31,7 +31,8 @@ class MainGame(Screen):
     installed_gpu = StringProperty("None")
     installed_ram = StringProperty("None")
 
-    total_wattage = NumericProperty(0)
+    total_wattage = NumericProperty(50)
+    base_system_watt = 50
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -56,7 +57,7 @@ class MainGame(Screen):
             },
             {
                 "name": "Budget Gamer",
-                "budget": 1000,
+                "budget": 800,
                 "required_gpu": "RX 6600",
                 "required_cpu": "Ryzen 5 5500 (AM4)",
                 "required_ram": "16GB DDR4",
@@ -65,7 +66,7 @@ class MainGame(Screen):
             },
             {
                 "name": "Affordable Gaming",
-                "budget": 1400,
+                "budget": 1100,
                 "required_gpu": "RTX 3060",
                 "required_cpu": "Ryzen 5 5600X (AM4)",
                 "required_ram": "16GB DDR4",
@@ -74,7 +75,7 @@ class MainGame(Screen):
             },
             {
                 "name": "Streaming Workstation",
-                "budget": 2000,
+                "budget": 1400,
                 "required_gpu": "RTX 4060 Ti",
                 "required_cpu": "Core i5-13400 (LGA1700)",
                 "required_ram": "32GB DDR4",
@@ -83,7 +84,7 @@ class MainGame(Screen):
             },
             {
                 "name": "High-End Gaming",
-                "budget": 2800,
+                "budget": 2200,
                 "required_gpu": "RTX 4070 Super",
                 "required_cpu": "Ryzen 7 7800X3D (AM5)",
                 "required_ram": "32GB DDR5",
@@ -92,7 +93,7 @@ class MainGame(Screen):
             },
             {
                 "name": "Enthusiast Build",
-                "budget": 4500,
+                "budget": 4000,
                 "required_gpu": "RTX 4090",
                 "required_cpu": "Core i9-14900K (LGA1700)",
                 "required_ram": "64GB DDR5",
@@ -104,31 +105,31 @@ class MainGame(Screen):
         self.items = [
             {
                 "name": "Core i3-12100 (LGA1700)",
-                "price": 120,
+                "price": 110,
                 "type": "CPU",
                 "socket": "LGA1700",
-                "watt": 60,
+                "watt": 89,
             },
             {
                 "name": "Core i5-13400 (LGA1700)",
-                "price": 230,
+                "price": 220,
                 "type": "CPU",
                 "socket": "LGA1700",
-                "watt": 65,
+                "watt": 154,
             },
             {
                 "name": "Core i7-14700K (LGA1700)",
                 "price": 400,
                 "type": "CPU",
                 "socket": "LGA1700",
-                "watt": 125,
+                "watt": 253,
             },
             {
                 "name": "Core i9-14900K (LGA1700)",
                 "price": 580,
                 "type": "CPU",
                 "socket": "LGA1700",
-                "watt": 150,
+                "watt": 300,
             },
             {
                 "name": "Ryzen 5 5500 (AM4)",
@@ -139,79 +140,107 @@ class MainGame(Screen):
             },
             {
                 "name": "Ryzen 5 5600X (AM4)",
-                "price": 160,
+                "price": 150,
                 "type": "CPU",
                 "socket": "AM4",
-                "watt": 65,
+                "watt": 76,
             },
             {
                 "name": "Ryzen 7 5800X3D (AM4)",
                 "price": 320,
                 "type": "CPU",
                 "socket": "AM4",
-                "watt": 105,
+                "watt": 142,
             },
             {
                 "name": "Ryzen 5 7600 (AM5)",
                 "price": 220,
                 "type": "CPU",
                 "socket": "AM5",
-                "watt": 65,
+                "watt": 88,
             },
             {
                 "name": "Ryzen 7 7800X3D (AM5)",
-                "price": 450,
+                "price": 400,
                 "type": "CPU",
                 "socket": "AM5",
-                "watt": 120,
+                "watt": 162,
             },
             {
                 "name": "Ryzen 9 7950X (AM5)",
                 "price": 550,
                 "type": "CPU",
                 "socket": "AM5",
-                "watt": 170,
+                "watt": 230,
             },
-            {"name": "H610M (LGA1700)", "price": 80, "type": "MB", "socket": "LGA1700"},
+            {
+                "name": "H610M (LGA1700)",
+                "price": 80,
+                "type": "MB",
+                "socket": "LGA1700",
+                "watt": 30,
+            },
             {
                 "name": "B760 Pro (LGA1700)",
                 "price": 140,
                 "type": "MB",
                 "socket": "LGA1700",
+                "watt": 30,
             },
             {
                 "name": "Z790 Elite (LGA1700)",
                 "price": 250,
                 "type": "MB",
                 "socket": "LGA1700",
+                "watt": 40,
             },
-            {"name": "A520M (AM4)", "price": 70, "type": "MB", "socket": "AM4"},
+            {
+                "name": "A520M (AM4)",
+                "price": 70,
+                "type": "MB",
+                "socket": "AM4",
+                "watt": 30,
+            },
             {
                 "name": "B550 Steel Legend (AM4)",
                 "price": 130,
                 "type": "MB",
                 "socket": "AM4",
+                "watt": 30,
             },
-            {"name": "B650 Gaming (AM5)", "price": 180, "type": "MB", "socket": "AM5"},
-            {"name": "X670E Taichi (AM5)", "price": 400, "type": "MB", "socket": "AM5"},
+            {
+                "name": "B650 Gaming (AM5)",
+                "price": 180,
+                "type": "MB",
+                "socket": "AM5",
+                "watt": 35,
+            },
+            {
+                "name": "X670E Taichi (AM5)",
+                "price": 350,
+                "type": "MB",
+                "socket": "AM5",
+                "watt": 40,
+            },
             {"name": "GTX 1650", "price": 150, "type": "GPU", "watt": 75},
-            {"name": "RTX 3060", "price": 290, "type": "GPU", "watt": 170},
+            {"name": "RTX 3060", "price": 280, "type": "GPU", "watt": 170},
             {"name": "RTX 4060 Ti", "price": 380, "type": "GPU", "watt": 160},
             {"name": "RTX 4070 Super", "price": 600, "type": "GPU", "watt": 220},
             {"name": "RTX 4080 Super", "price": 1000, "type": "GPU", "watt": 320},
             {"name": "RTX 4090", "price": 1800, "type": "GPU", "watt": 450},
-            {"name": "RX 6600", "price": 200, "type": "GPU", "watt": 130},
-            {"name": "RX 7800 XT", "price": 500, "type": "GPU", "watt": 260},
-            {"name": "8GB DDR4", "price": 40, "type": "RAM"},
-            {"name": "16GB DDR4", "price": 70, "type": "RAM"},
-            {"name": "32GB DDR4", "price": 130, "type": "RAM"},
-            {"name": "32GB DDR5", "price": 180, "type": "RAM"},
-            {"name": "64GB DDR5", "price": 350, "type": "RAM"},
+            {"name": "RX 6600", "price": 200, "type": "GPU", "watt": 132},
+            {"name": "RX 7800 XT", "price": 500, "type": "GPU", "watt": 263},
+            {"name": "8GB DDR4", "price": 25, "type": "RAM", "watt": 5},
+            {"name": "16GB DDR4", "price": 45, "type": "RAM", "watt": 10},
+            {"name": "32GB DDR4", "price": 70, "type": "RAM", "watt": 15},
+            {"name": "32GB DDR5", "price": 100, "type": "RAM", "watt": 15},
+            {"name": "64GB DDR5", "price": 200, "type": "RAM", "watt": 25},
             {"name": "500W PSU", "price": 50, "type": "PSU", "watt_limit": 500},
+            {"name": "650W PSU", "price": 75, "type": "PSU", "watt_limit": 650},
             {"name": "750W PSU", "price": 90, "type": "PSU", "watt_limit": 750},
-            {"name": "850W PSU", "price": 130, "type": "PSU", "watt_limit": 850},
-            {"name": "1000W PSU", "price": 200, "type": "PSU", "watt_limit": 1000},
-            {"name": "1200W PSU", "price": 280, "type": "PSU", "watt_limit": 1200},
+            {"name": "850W PSU", "price": 120, "type": "PSU", "watt_limit": 850},
+            {"name": "1000W PSU", "price": 160, "type": "PSU", "watt_limit": 1000},
+            {"name": "1200W PSU", "price": 220, "type": "PSU", "watt_limit": 1200},
         ]
         Clock.schedule_once(self.populate_shop)
         Clock.schedule_once(self.generate_new_order)
@@ -295,7 +324,7 @@ class MainGame(Screen):
             self.installed_psu = "None"
             self.installed_gpu = "None"
             self.installed_ram = "None"
-            self.total_wattage = 0
+            self.total_wattage = self.base_system_watt
             self.current_build_cost = 0
 
             self.update_status()
@@ -357,8 +386,9 @@ class MainGame(Screen):
         if is_complete:
             psu = self.installed_parts.get("PSU")
             psu_limit = psu["watt_limit"] if psu else 0
+            safe_psu_limit = psu_limit * 0.8
 
-            if self.total_wattage <= psu_limit:
+            if self.total_wattage <= safe_psu_limit:
                 self.pc_status = "Ready to sell!"
             else:
                 self.pc_status = "Power overload!"
@@ -369,7 +399,7 @@ class MainGame(Screen):
         self.money = 3000
         self.reputation = 50
         self.current_build_cost = 0
-        self.total_wattage = 0
+        self.total_wattage = self.base_system_watt
         self.installed_parts = {
             "CPU": None,
             "MB": None,
