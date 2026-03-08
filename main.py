@@ -1,4 +1,5 @@
 import os
+import random
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
@@ -15,6 +16,9 @@ class MainGame(Screen):
     money = NumericProperty(3000)
     pc_status = StringProperty("Empty")
     log_message = StringProperty("Welcome to the workshop!")
+    reputation = NumericProperty(50)
+    current_order = StringProperty("")
+    order_reward = NumericProperty(0)
 
     installed_cpu = StringProperty("None")
     installed_mb = StringProperty("None")
@@ -27,9 +31,52 @@ class MainGame(Screen):
     total_wattage = NumericProperty(0)
     psu_limit = 0
     current_value = 0
+    current_order_specs = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.customer_orders = [
+            {
+                "name": "Budget Gamer",
+                "budget": 1200,
+                "min_gpu": "GTX 1650",
+                "min_cpu": "Ryzen 5 5600X",
+                "min_ram": "16GB",
+                "reward_multiplier": 0.4,
+            },
+            {
+                "name": "Streaming Workstation",
+                "budget": 2000,
+                "min_gpu": "RTX 3060",
+                "min_cpu": "Core i7",
+                "min_ram": "32GB",
+                "reward_multiplier": 0.5,
+            },
+            {
+                "name": "High-End Gaming",
+                "budget": 2500,
+                "min_gpu": "RTX 4070",
+                "min_cpu": "Core i9",
+                "min_ram": "32GB",
+                "reward_multiplier": 0.6,
+            },
+            {
+                "name": "Office Build",
+                "budget": 800,
+                "min_gpu": "GTX 1650",
+                "min_cpu": "Core i3",
+                "min_ram": "8GB",
+                "reward_multiplier": 0.35,
+            },
+            {
+                "name": "Affordable Gaming",
+                "budget": 1500,
+                "min_gpu": "RTX 3060",
+                "min_cpu": "Ryzen 7 5800X",
+                "min_ram": "16GB",
+                "reward_multiplier": 0.45,
+            },
+        ]
         self.items = [
             {
                 "name": "Core i3 (LGA1700)",
@@ -163,6 +210,7 @@ class MainGame(Screen):
             },
         ]
         Clock.schedule_once(self.populate_shop)
+        Clock.schedule_once(self.generate_new_order)
 
     def populate_shop(self, dt, category="all"):
         self.ids.shop_list.clear_widgets()
@@ -176,6 +224,49 @@ class MainGame(Screen):
     def set_category(self, cat):
         self.populate_shop(0, cat)
 
+    def generate_new_order(self, dt=0):
+        self.current_order_specs = random.choice(self.customer_orders)
+        order_name = self.current_order_specs["name"]
+        budget = self.current_order_specs["budget"]
+        self.current_order = f"{order_name} - Budget: ${budget}"
+        self.log_message = f"New order: {order_name}"
+
+    def check_order_requirements(self):
+        if not self.current_order_specs:
+            return False, 0
+
+        specs = self.current_order_specs
+        cost = 0
+        for item in self.items:
+            if item["name"] in [
+                self.installed_cpu,
+                self.installed_mb,
+                self.installed_psu,
+                self.installed_gpu,
+                self.installed_ram,
+            ]:
+                cost += item["price"]
+
+        # Check if within budget
+        if cost > specs["budget"]:
+            return False, 0
+
+        # Check component requirements
+        cpu_ok = (
+            specs["min_cpu"] in self.installed_cpu
+            or "Ryzen 9" in self.installed_cpu
+            or "Core i9" in self.installed_cpu
+        )
+        gpu_ok = (
+            specs["min_gpu"] in self.installed_gpu or "RTX 4070" in self.installed_gpu
+        )
+        ram_ok = specs["min_ram"] in self.installed_ram
+
+        if cpu_ok and gpu_ok and ram_ok:
+            return True, specs["reward_multiplier"]
+
+        return False, 0
+
     def on_sell_pc(self):
         if self.pc_status == "Ready to sell!":
             cost = 0
@@ -188,10 +279,31 @@ class MainGame(Screen):
                     self.installed_ram,
                 ]:
                     cost += item["price"]
-            sell_price = int(cost * 1.5)
-            self.money += sell_price
-            profit = sell_price - cost
-            self.log_message = f"PC sold for ${sell_price}! Profit: ${profit}"
+
+            # Check if order requirements are met
+            order_met, multiplier = self.check_order_requirements()
+
+            if order_met:
+                # Apply reputation multiplier to profit
+                base_profit = cost * 0.5
+                reputation_bonus = (self.reputation - 50) * 0.01
+                sell_price = int(cost * (1.5 + multiplier + reputation_bonus))
+                profit = sell_price - cost
+                self.money += sell_price
+                self.reputation = min(100, self.reputation + 5)
+                self.log_message = (
+                    f"✓ Order fulfilled! Sold for ${sell_price}! Profit: ${profit}"
+                )
+            else:
+                # Sell without meeting order
+                reputation_penalty = 1 - (self.reputation - 50) * 0.01
+                sell_price = int(cost * (1.3 * reputation_penalty))
+                profit = sell_price - cost
+                self.money += sell_price
+                self.reputation = max(0, self.reputation - 2)
+                self.log_message = f"Order not fulfilled. Sold for ${sell_price}. Rep: {self.reputation}/100"
+
+            # Clear current build
             self.installed_cpu = "None"
             self.installed_mb = "None"
             self.installed_psu = "None"
@@ -201,6 +313,9 @@ class MainGame(Screen):
             self.mb_socket = ""
             self.total_wattage = 0
             self.update_status()
+
+            # Generate next order
+            self.generate_new_order()
         else:
             self.log_message = "PC not ready to sell!"
 
@@ -249,6 +364,7 @@ class MainGame(Screen):
 
     def reset_game(self):
         self.money = 3000
+        self.reputation = 50
         self.installed_cpu = "None"
         self.installed_mb = "None"
         self.installed_psu = "None"
@@ -262,6 +378,7 @@ class MainGame(Screen):
         self.log_message = "Game reset!"
         self.ids.shop_list.clear_widgets()
         self.populate_shop(0)
+        self.generate_new_order()
 
 
 class PCBuilderApp(App):
