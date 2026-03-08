@@ -1,29 +1,52 @@
+import os
 from kivy.app import App
-from kivy.uix.tabbedpanel import TabbedPanel
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.lang import Builder
 from kivy.properties import NumericProperty, StringProperty
+from kivy.clock import Clock
 
 
-class GameRoot(TabbedPanel):
-    money = NumericProperty(50000)
-    pc_score = NumericProperty(0)
-    current_status = StringProperty("Ready to Build")
+current_dir = os.path.dirname(__file__)
+Builder.load_file(os.path.join(current_dir, "pcbuilder.kv"))
 
-    def buy_part(self, part_name, price, score):
-        if self.money >= price:
-            self.money -= price
-            self.pc_score += score
-            self.current_status = f"Added {part_name}!"
-        else:
-            self.current_status = "Not enough money!"
 
-    def reset_build(self):
-        self.pc_score = 0
-        self.current_status = "Build Reset"
+class MainGame(Screen):
+    money = NumericProperty(1500)
+    pc_status = StringProperty("Empty")
+    log_message = StringProperty("Welcome to the workshop!")
+
+    installed_cpu = StringProperty("None")
+    installed_mb = StringProperty("None")
+    installed_psu = StringProperty("None")
+
+    cpu_socket = ""
+    mb_socket = ""
+    total_wattage = NumericProperty(0)
+    psu_limit = 0
+    current_value = 0
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(self.populate_shop)
+
+    def populate_shop(self, dt):
+        items = [
+            {
+                "name": "Core i3 (LGA1700)",
+                "price": 300,
+                "type": "CPU",
+                "socket": "LGA1700",
+                "watt": 65,
+            },
+        ]
 
 
 class PCBuilderApp(App):
     def build(self):
-        return GameRoot()
+        self.title = "PC Builder Tycoon"
+        sm = ScreenManager()
+        sm.add_widget(MainGame(name="main"))
+        return sm
 
 
 if __name__ == "__main__":

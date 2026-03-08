@@ -1,42 +1,82 @@
-<GameRoot>:
-    do_default_tab: False
-    
-    TabbedPanelItem:
-        text: "Shop"
-        BoxLayout:
-            orientation: 'vertical'
-            padding: 20
-            spacing: 10
-            
-            Label:
-                text: f"Wallet: {root.money} THB"
-                font_size: 24
-            
-            # ตรงนี้ถ้าใช้ GridLayout แล้วใส่ Button เลือก CPU/GPU สัก 10-15 ปุ่ม 
-            # คุณจะเก็บจำนวน Widget ได้เร็วมาก!
-            GridLayout:
-                cols: 2
-                spacing: 10
-                
-                Button:
-                    text: "Core i5 (5,000 THB)"
-                    on_release: root.buy_part("i5", 5000, 50) # Callback
-                
-                Button:
-                    text: "Core i9 (18,000 THB)"
-                    on_release: root.buy_part("i9", 18000, 150) # Callback
+<PartButton@Button>:
+    size_hint_y: None
+    height: "60dp"
+    background_color: (0.2, 0.6, 1, 1)
 
-            Label:
-                text: f"PC Score: {root.pc_score}"
-            Label:
-                text: root.current_status
-                color: (0, 1, 0, 1)
+<MainGame>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: (0.1, 0.1, 0.12, 1)
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
-    TabbedPanelItem:
-        text: "Settings"
+        ActionBar:
+            ActionView:
+                ActionPrevious: 
+                    title: "PC BUILDER TYCOON v1.0"
+                    with_previous: False
+                ActionButton: 
+                    text: "RESET"
+                    on_release: root.reset_game()
+
         BoxLayout:
-            # ใส่ Slider, Switch, CheckBox ตรงนี้ให้ครบ 30 ชิ้น
-            Slider:
-                min: 0
-                max: 100
-                on_value: print("Volume changed")
+            size_hint_y: 0.1
+            padding: 10
+            Label:
+                text: "WALLET: $" + str(root.money)
+                font_size: '20sp'
+                bold: True
+                color: (0, 1, 0.5, 1)
+            Label:
+                text: "PC STATUS: " + root.pc_status
+                color: (1, 1, 0, 1)
+
+        BoxLayout:
+            orientation: 'horizontal'
+
+            # Shop & Inventory
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.3
+                Label: 
+                    text: "PARTS SHOP"
+                    size_hint_y: 0.1
+                ScrollView:
+                    StackLayout:
+                        id: shop_list
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: 5
+                        spacing: 5
+
+            # Assembly Bench
+            RelativeLayout:
+                size_hint_x: 0.4
+                canvas:
+                    Color:
+                        rgba: (0.2, 0.2, 0.25, 1)
+                    RoundedRectangle:
+                        pos: 10, 10
+                        size: self.width-20, self.height-20
+                
+                Label:
+                    text: "ASSEMBLY BENCH"
+                    pos_hint: {'center_x': 0.5, 'top': 0.95}
+                
+                Label:
+                    id: cpu_slot
+                    text: "CPU: " + root.installed_cpu
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+                Label:
+                    id: mb_slot
+                    text: "MB: " + root.installed_mb
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+                Label:
+                    id: psu_slot
+                    text: "PSU: " + root.installed_psu
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+         
