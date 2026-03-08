@@ -4,6 +4,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.properties import NumericProperty, StringProperty
 from kivy.clock import Clock
+from kivy.factory import Factory
 
 
 current_dir = os.path.dirname(__file__)
@@ -18,6 +19,8 @@ class MainGame(Screen):
     installed_cpu = StringProperty("None")
     installed_mb = StringProperty("None")
     installed_psu = StringProperty("None")
+    installed_gpu = StringProperty("None")
+    installed_ram = StringProperty("None")
 
     cpu_socket = ""
     mb_socket = ""
@@ -128,7 +131,105 @@ class MainGame(Screen):
                 "type": "PSU",
                 "watt_limit": 750,
             },
+            {
+                "name": "GTX 1650",
+                "price": 200,
+                "type": "GPU",
+                "watt": 75,
+            },
+            {
+                "name": "RTX 3060",
+                "price": 400,
+                "type": "GPU",
+                "watt": 170,
+            },
+            {
+                "name": "RTX 4070",
+                "price": 600,
+                "type": "GPU",
+                "watt": 200,
+            },
+            {
+                "name": "8GB DDR4",
+                "price": 50,
+                "type": "RAM",
+            },
+            {
+                "name": "16GB DDR4",
+                "price": 80,
+                "type": "RAM",
+            },
+            {
+                "name": "32GB DDR4",
+                "price": 150,
+                "type": "RAM",
+            },
         ]
+
+        for item in items:
+            btn = Factory.PartButton(text=f"{item['name']} - ${item['price']}")
+            btn.part = item
+            btn.bind(on_release=lambda btn: self.buy_part(btn.part))
+            self.ids.shop_list.add_widget(btn)
+
+    def buy_part(self, item):
+        if self.money >= item["price"]:
+            self.money -= item["price"]
+            if item["type"] == "CPU":
+                if self.mb_socket and self.mb_socket != item["socket"]:
+                    self.log_message = "Socket mismatch!"
+                    return
+                self.installed_cpu = item["name"]
+                self.cpu_socket = item["socket"]
+                self.total_wattage += item["watt"]
+            elif item["type"] == "MB":
+                if self.cpu_socket and self.cpu_socket != item["socket"]:
+                    self.log_message = "Socket mismatch!"
+                    return
+                self.installed_mb = item["name"]
+                self.mb_socket = item["socket"]
+            elif item["type"] == "PSU":
+                self.installed_psu = item["name"]
+                self.psu_limit = item["watt_limit"]
+            elif item["type"] == "GPU":
+                self.installed_gpu = item["name"]
+                self.total_wattage += item["watt"]
+            elif item["type"] == "RAM":
+                self.installed_ram = item["name"]
+            self.update_status()
+        else:
+            self.log_message = "Not enough money!"
+
+    def update_status(self):
+        if (
+            self.installed_cpu != "None"
+            and self.installed_mb != "None"
+            and self.installed_psu != "None"
+            and self.installed_gpu != "None"
+            and self.installed_ram != "None"
+        ):
+            if self.total_wattage <= self.psu_limit:
+                self.pc_status = "Ready to sell!"
+            else:
+                self.pc_status = "Power overload!"
+        else:
+            self.pc_status = "Incomplete"
+
+    def reset_game(self):
+        self.money = 1500
+        self.installed_cpu = "None"
+        self.installed_mb = "None"
+        self.installed_psu = "None"
+        self.installed_gpu = "None"
+        self.installed_ram = "None"
+        self.cpu_socket = ""
+        self.mb_socket = ""
+        self.total_wattage = 0
+        self.psu_limit = 0
+        self.pc_status = "Empty"
+        self.log_message = "Game reset!"
+        self.ids.shop_list.clear_widgets()
+        self.populate_shop(0)
 
 
 class PCBuilderApp(App):

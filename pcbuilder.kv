@@ -33,6 +33,9 @@
             Label:
                 text: "PC STATUS: " + root.pc_status
                 color: (1, 1, 0, 1)
+            Label:
+                text: root.log_message
+                color: (1, 0.5, 0, 1)
 
         BoxLayout:
             orientation: 'horizontal'
@@ -53,30 +56,42 @@
                         spacing: 5
 
             # Assembly Bench
-            RelativeLayout:
+            BoxLayout:
+                orientation: 'vertical'
                 size_hint_x: 0.4
-                canvas:
-                    Color:
-                        rgba: (0.2, 0.2, 0.25, 1)
-                    RoundedRectangle:
-                        pos: 10, 10
-                        size: self.width-20, self.height-20
-                
                 Label:
                     text: "ASSEMBLY BENCH"
-                    pos_hint: {'center_x': 0.5, 'top': 0.95}
-                
-                Label:
-                    id: cpu_slot
-                    text: "CPU: " + root.installed_cpu
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.7}
-                Label:
-                    id: mb_slot
-                    text: "MB: " + root.installed_mb
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.6}
-                Label:
-                    id: psu_slot
-                    text: "PSU: " + root.installed_psu
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    size_hint_y: None
+                    height: 40
+                    font_size: '18sp'
+                    bold: True
+                RelativeLayout:
+                    canvas:
+                        Color:
+                            rgba: (0.2, 0.2, 0.25, 1)
+                        RoundedRectangle:
+                            pos: 10, 10
+                            size: self.width-20, self.height-20
+                    
+                    Label:
+                        id: cpu_slot
+                        text: "CPU: " + root.installed_cpu
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+                    Label:
+                        id: mb_slot
+                        text: "MB: " + root.installed_mb
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+                    Label:
+                        id: psu_slot
+                        text: "PSU: " + root.installed_psu
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    Label:
+                        id: gpu_slot
+                        text: "GPU: " + root.installed_gpu
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+                    Label:
+                        id: ram_slot
+                        text: "RAM: " + root.installed_ram
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.3}
 
          
