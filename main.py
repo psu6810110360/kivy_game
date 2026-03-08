@@ -12,7 +12,7 @@ Builder.load_file(os.path.join(current_dir, "pcbuilder.kv"))
 
 
 class MainGame(Screen):
-    money = NumericProperty(1500)
+    money = NumericProperty(3000)
     pc_status = StringProperty("Empty")
     log_message = StringProperty("Welcome to the workshop!")
 
@@ -30,10 +30,7 @@ class MainGame(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Clock.schedule_once(self.populate_shop)
-
-    def populate_shop(self, dt):
-        items = [
+        self.items = [
             {
                 "name": "Core i3 (LGA1700)",
                 "price": 300,
@@ -120,18 +117,6 @@ class MainGame(Screen):
                 "socket": "AM4",
             },
             {
-                "name": "500W PSU",
-                "price": 50,
-                "type": "PSU",
-                "watt_limit": 500,
-            },
-            {
-                "name": "750W PSU",
-                "price": 80,
-                "type": "PSU",
-                "watt_limit": 750,
-            },
-            {
                 "name": "GTX 1650",
                 "price": 200,
                 "type": "GPU",
@@ -164,13 +149,60 @@ class MainGame(Screen):
                 "price": 150,
                 "type": "RAM",
             },
+            {
+                "name": "500W PSU",
+                "price": 50,
+                "type": "PSU",
+                "watt_limit": 500,
+            },
+            {
+                "name": "750W PSU",
+                "price": 80,
+                "type": "PSU",
+                "watt_limit": 750,
+            },
         ]
+        Clock.schedule_once(self.populate_shop)
 
-        for item in items:
-            btn = Factory.PartButton(text=f"{item['name']} - ${item['price']}")
-            btn.part = item
-            btn.bind(on_release=lambda btn: self.buy_part(btn.part))
-            self.ids.shop_list.add_widget(btn)
+    def populate_shop(self, dt, category="all"):
+        self.ids.shop_list.clear_widgets()
+        for item in self.items:
+            if category == "all" or item["type"] == category:
+                btn = Factory.PartButton(text=f"{item['name']} - ${item['price']}")
+                btn.part = item
+                btn.bind(on_release=lambda btn: self.buy_part(btn.part))
+                self.ids.shop_list.add_widget(btn)
+
+    def set_category(self, cat):
+        self.populate_shop(0, cat)
+
+    def on_sell_pc(self):
+        if self.pc_status == "Ready to sell!":
+            cost = 0
+            for item in self.items:
+                if item["name"] in [
+                    self.installed_cpu,
+                    self.installed_mb,
+                    self.installed_psu,
+                    self.installed_gpu,
+                    self.installed_ram,
+                ]:
+                    cost += item["price"]
+            sell_price = int(cost * 1.5)
+            self.money += sell_price
+            profit = sell_price - cost
+            self.log_message = f"PC sold for ${sell_price}! Profit: ${profit}"
+            self.installed_cpu = "None"
+            self.installed_mb = "None"
+            self.installed_psu = "None"
+            self.installed_gpu = "None"
+            self.installed_ram = "None"
+            self.cpu_socket = ""
+            self.mb_socket = ""
+            self.total_wattage = 0
+            self.update_status()
+        else:
+            self.log_message = "PC not ready to sell!"
 
     def buy_part(self, item):
         if self.money >= item["price"]:
@@ -216,7 +248,7 @@ class MainGame(Screen):
             self.pc_status = "Incomplete"
 
     def reset_game(self):
-        self.money = 1500
+        self.money = 3000
         self.installed_cpu = "None"
         self.installed_mb = "None"
         self.installed_psu = "None"

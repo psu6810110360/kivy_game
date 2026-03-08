@@ -47,6 +47,27 @@
                 Label: 
                     text: "PARTS SHOP"
                     size_hint_y: 0.1
+                BoxLayout:
+                    size_hint_y: None
+                    height: 50
+                    Button:
+                        text: "CPUs"
+                        on_release: root.set_category('CPU')
+                    Button:
+                        text: "Motherboards"
+                        on_release: root.set_category('MB')
+                    Button:
+                        text: "GPUs"
+                        on_release: root.set_category('GPU')
+                    Button:
+                        text: "RAM"
+                        on_release: root.set_category('RAM')
+                    Button:
+                        text: "PSUs"
+                        on_release: root.set_category('PSU')
+                    Button:
+                        text: "All"
+                        on_release: root.set_category('all')
                 ScrollView:
                     StackLayout:
                         id: shop_list
@@ -94,4 +115,22 @@
                         text: "RAM: " + root.installed_ram
                         pos_hint: {'center_x': 0.5, 'center_y': 0.3}
 
-         
+            # Controls & Specs
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.3
+                padding: 10
+                spacing: 10
+                
+                Label:
+                    text: "SYSTEM SPECS"
+                ProgressBar:
+                    max: 1000
+                    value: root.total_wattage
+                Label:
+                    text: "Power Draw: " + str(root.total_wattage) + "W"
+                
+                Button:
+                    text: "BOOT & SELL PC"
+                    background_color: (0, 0.8, 0, 1)
+                    on_press: root.on_sell_pc()
