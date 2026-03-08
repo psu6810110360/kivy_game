@@ -24,12 +24,15 @@ class MainGame(Screen):
     required_cpu_display = StringProperty("")
     required_gpu_display = StringProperty("")
     required_ram_display = StringProperty("")
+    required_storage_display = StringProperty("")
 
     installed_cpu = StringProperty("None")
     installed_mb = StringProperty("None")
     installed_psu = StringProperty("None")
     installed_gpu = StringProperty("None")
     installed_ram = StringProperty("None")
+    installed_storage = StringProperty("None")
+    installed_case = StringProperty("None")
 
     total_wattage = NumericProperty(50)
     base_system_watt = 50
@@ -42,61 +45,69 @@ class MainGame(Screen):
             "GPU": None,
             "RAM": None,
             "PSU": None,
+            "Storage": None,
+            "Case": None,
         }
         self.current_order_specs = None
 
         self.customer_orders = [
             {
                 "name": "Office Build",
-                "budget": 600,
+                "budget": 750,
                 "required_gpu": "GTX 1650",
                 "required_cpu": "Core i3-12100 (LGA1700)",
                 "required_ram": "8GB DDR4",
+                "required_storage": "500GB SATA SSD",
                 "reward_multiplier": 0.3,
                 "min_rep": 0,
             },
             {
                 "name": "Budget Gamer",
-                "budget": 800,
+                "budget": 950,
                 "required_gpu": "RX 6600",
                 "required_cpu": "Ryzen 5 5500 (AM4)",
                 "required_ram": "16GB DDR4",
+                "required_storage": "1TB NVMe Gen3",
                 "reward_multiplier": 0.4,
                 "min_rep": 0,
             },
             {
                 "name": "Affordable Gaming",
-                "budget": 1100,
+                "budget": 1250,
                 "required_gpu": "RTX 3060",
                 "required_cpu": "Ryzen 5 5600X (AM4)",
                 "required_ram": "16GB DDR4",
+                "required_storage": "1TB NVMe Gen3",
                 "reward_multiplier": 0.45,
                 "min_rep": 20,
             },
             {
                 "name": "Streaming Workstation",
-                "budget": 1400,
+                "budget": 1600,
                 "required_gpu": "RTX 4060 Ti",
                 "required_cpu": "Core i5-13400 (LGA1700)",
                 "required_ram": "32GB DDR4",
+                "required_storage": "1TB NVMe Gen4",
                 "reward_multiplier": 0.5,
                 "min_rep": 40,
             },
             {
                 "name": "High-End Gaming",
-                "budget": 2200,
+                "budget": 2500,
                 "required_gpu": "RTX 4070 Super",
                 "required_cpu": "Ryzen 7 7800X3D (AM5)",
                 "required_ram": "32GB DDR5",
+                "required_storage": "2TB NVMe Gen4",
                 "reward_multiplier": 0.6,
                 "min_rep": 60,
             },
             {
                 "name": "Enthusiast Build",
-                "budget": 4000,
+                "budget": 4300,
                 "required_gpu": "RTX 4090",
                 "required_cpu": "Core i9-14900K (LGA1700)",
                 "required_ram": "64GB DDR5",
+                "required_storage": "2TB NVMe Gen4",
                 "reward_multiplier": 0.8,
                 "min_rep": 80,
             },
@@ -295,6 +306,14 @@ class MainGame(Screen):
                 "watt": 25,
                 "ram_type": "DDR5",
             },
+            {"name": "500GB SATA SSD", "price": 35, "type": "Storage", "watt": 5},
+            {"name": "1TB NVMe Gen3", "price": 60, "type": "Storage", "watt": 8},
+            {"name": "1TB NVMe Gen4", "price": 90, "type": "Storage", "watt": 10},
+            {"name": "2TB NVMe Gen4", "price": 160, "type": "Storage", "watt": 10},
+            {"name": "Standard Office Case", "price": 30, "type": "Case", "watt": 0},
+            {"name": "Budget Mesh Case", "price": 50, "type": "Case", "watt": 0},
+            {"name": "Premium ATX Case", "price": 100, "type": "Case", "watt": 0},
+            {"name": "Enthusiast Full Tower", "price": 180, "type": "Case", "watt": 0},
             {"name": "500W PSU", "price": 50, "type": "PSU", "watt_limit": 500},
             {"name": "650W PSU", "price": 75, "type": "PSU", "watt_limit": 650},
             {"name": "750W PSU", "price": 90, "type": "PSU", "watt_limit": 750},
@@ -329,6 +348,9 @@ class MainGame(Screen):
         self.required_cpu_display = f"CPU: {self.current_order_specs['required_cpu']}"
         self.required_gpu_display = f"GPU: {self.current_order_specs['required_gpu']}"
         self.required_ram_display = f"RAM: {self.current_order_specs['required_ram']}"
+        self.required_storage_display = (
+            f"Storage: {self.current_order_specs['required_storage']}"
+        )
         self.budget_remaining = self.current_order_specs["budget"]
         self.current_build_cost = 0
         self.log_message = f"New order: {self.current_order_specs['name']}"
@@ -344,8 +366,11 @@ class MainGame(Screen):
         cpu_ok = self.installed_cpu == self.current_order_specs["required_cpu"]
         gpu_ok = self.installed_gpu == self.current_order_specs["required_gpu"]
         ram_ok = self.installed_ram == self.current_order_specs["required_ram"]
+        storage_ok = (
+            self.installed_storage == self.current_order_specs["required_storage"]
+        )
 
-        if cpu_ok and gpu_ok and ram_ok:
+        if cpu_ok and gpu_ok and ram_ok and storage_ok:
             return True, self.current_order_specs["reward_multiplier"]
 
         return False, 0
@@ -378,12 +403,16 @@ class MainGame(Screen):
                 "GPU": None,
                 "RAM": None,
                 "PSU": None,
+                "Storage": None,
+                "Case": None,
             }
             self.installed_cpu = "None"
             self.installed_mb = "None"
             self.installed_psu = "None"
             self.installed_gpu = "None"
             self.installed_ram = "None"
+            self.installed_storage = "None"
+            self.installed_case = "None"
             self.total_wattage = self.base_system_watt
             self.current_build_cost = 0
 
@@ -450,6 +479,10 @@ class MainGame(Screen):
             self.installed_ram = item["name"]
         elif part_type == "PSU":
             self.installed_psu = item["name"]
+        elif part_type == "Storage":
+            self.installed_storage = item["name"]
+        elif part_type == "Case":
+            self.installed_case = item["name"]
 
         self.update_status()
 
@@ -479,12 +512,16 @@ class MainGame(Screen):
             "GPU": None,
             "RAM": None,
             "PSU": None,
+            "Storage": None,
+            "Case": None,
         }
         self.installed_cpu = "None"
         self.installed_mb = "None"
         self.installed_psu = "None"
         self.installed_gpu = "None"
         self.installed_ram = "None"
+        self.installed_storage = "None"
+        self.installed_case = "None"
         self.pc_status = "Empty"
         self.log_message = "Game reset!"
 
