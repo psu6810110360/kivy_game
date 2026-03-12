@@ -118,6 +118,8 @@
                 max: 1
                 value: app.music_volume
                 on_value: app.music_volume = self.value
+                # เล่นเสียงเมื่อปรับระดับเสียงเสร็จ (ปล่อยเมาส์/นิ้ว)
+                on_touch_up: if self.collide_point(*args[1].pos): root.play_sfx()
             
             Label:
                 text: "SFX Volume: " + str(int(sfx_slider.value * 100)) + "%"
@@ -127,13 +129,17 @@
                 max: 1
                 value: app.sfx_volume
                 on_value: app.sfx_volume = self.value
+                # เล่นเสียงเมื่อปรับระดับเสียงเสร็จเพื่อทดสอบความดัง
+                on_touch_up: if self.collide_point(*args[1].pos): root.play_sfx()
 
         Button:
             text: "BACK"
             size_hint: None, None
             size: "200dp", "55dp"
             pos_hint: {'center_x': 0.5}
-            on_release: app.root.current = 'menu'
+            on_release: 
+                root.play_sfx()  # เพิ่มเสียงตอนกดปุ่มกลับ
+                app.root.current = 'menu'
 
 <MainGame>:
     FloatLayout:
@@ -233,22 +239,34 @@
                         spacing: 5
                         Button:
                             text: "CPU"
-                            on_release: root.set_category('CPU')
+                            on_release: 
+                            root.play_sfx()
+                            root.set_category('CPU')
                         Button:
                             text: "MB"
-                            on_release: root.set_category('MB')
+                            on_release: 
+                            root.play_sfx()
+                            root.set_category('MB')
                         Button:
                             text: "GPU"
-                            on_release: root.set_category('GPU')
+                            on_release: 
+                            root.play_sfx()
+                            root.set_category('GPU')
                         Button:
                             text: "RAM"
-                            on_release: root.set_category('RAM')
+                            on_release: 
+                            root.play_sfx()
+                            root.set_category('RAM')
                         Button:
                             text: "PSU"
-                            on_release: root.set_category('PSU')
+                            on_release: 
+                            root.play_sfx()
+                            root.set_category('PSU')
                         Button:
                             text: "ALL"
-                            on_release: root.set_category('all')
+                            on_release: 
+                            root.play_sfx()
+                            root.set_category('all')
                     ScrollView:
                         StackLayout:
                             id: shop_list

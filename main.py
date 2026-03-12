@@ -27,7 +27,11 @@ class MainMenu(Screen):
             sfx.play()
 
 class SettingsScreen(Screen):
-    pass
+    def play_sfx(self):
+        sfx = SoundLoader.load('click.wav')
+        if sfx:
+            sfx.volume = App.get_running_app().sfx_volume
+            sfx.play()
 
 class MainGame(Screen):
     money = NumericProperty(3000)
