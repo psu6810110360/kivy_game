@@ -1,3 +1,63 @@
+<MainMenu>:
+    canvas.before:
+        Color:
+            rgba: (0.05, 0.05, 0.07, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        spacing: 20
+        
+        Label:
+            text: "PC BUILDER\n[color=#33ccff]TYCOON[/color]"
+            markup: True
+            font_size: '60sp'
+            bold: True
+            halign: 'center'
+            size_hint_y: 0.6
+            
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.4
+            size_hint_x: 0.4
+            pos_hint: {'center_x': 0.5}
+            spacing: 15
+            
+            Button:
+                text: "START GAME"
+                font_size: '20sp'
+                bold: True
+                background_color: (0,0,0,0)
+                background_normal: ''
+                canvas.before:
+                    Color:
+                        rgba: (0.1, 0.7, 0.3, 1) if self.state == 'normal' else (0.05, 0.5, 0.2, 1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+                on_release: 
+                    app.root.transition.direction = 'left'
+                    app.root.current = 'main'
+                    
+            Button:
+                text: "EXIT"
+                font_size: '20sp'
+                bold: True
+                background_color: (0,0,0,0)
+                background_normal: ''
+                canvas.before:
+                    Color:
+                        rgba: (0.8, 0.2, 0.2, 1) if self.state == 'normal' else (0.6, 0.1, 0.1, 1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+                on_release: app.stop()
+
 <MenuButton@Button>:
     background_color: (0, 0, 0, 0)
     background_normal: ''
@@ -44,8 +104,11 @@
             ActionView:
                 ActionPrevious: 
                     title: "PC BUILDER TYCOON - Workshop"
-                    with_previous: False
+                    with_previous: True
                     app_icon: '' 
+                    on_release: 
+                        app.root.transition.direction = 'right'
+                        app.root.current = 'menu'
                 ActionButton: 
                     text: "NEW GAME"
                     bold: True
@@ -136,6 +199,7 @@
                         halign: 'left'
                         valign: 'middle'
             
+            # Section: Current Order
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: 0.5
@@ -158,7 +222,7 @@
                     valign: 'middle'
                 Label:
                     text: root.current_order
-                    font_size: '16sp'
+                    font_size: '15sp'
                     bold: True
                     color: (0.2, 0.8, 1, 1)
                     size_hint_y: 0.2
@@ -168,7 +232,7 @@
                 
                 GridLayout:
                     cols: 2
-                    size_hint_y: 0.45
+                    size_hint_y: 0.35
                     Label:
                         text: root.required_cpu_display
                         font_size: '11sp'
@@ -199,14 +263,14 @@
                         valign: 'middle'
                 
                 BoxLayout:
-                    size_hint_y: 0.2
-                    spacing: 5
+                    size_hint_y: 0.3
+                    spacing: 10
                     BoxLayout:
                         orientation: 'vertical'
-                        size_hint_x: 0.7
+                        size_hint_x: 0.65
                         Label:
                             text: "Build: $" + str(int(root.current_build_cost))
-                            font_size: '12sp'
+                            font_size: '13sp'
                             bold: True
                             color: (1, 0.6, 0.2, 1)
                             text_size: self.size
@@ -214,18 +278,20 @@
                             valign: 'middle'
                         Label:
                             text: "Remain: $" + str(int(root.budget_remaining))
-                            font_size: '12sp'
+                            font_size: '13sp'
                             bold: True
                             color: (0.2, 0.9, 0.5, 1) if root.budget_remaining >= 0 else (1, 0.3, 0.3, 1)
                             text_size: self.size
                             halign: 'left'
                             valign: 'middle'
                     Button:
-                        text: "SKIP\nORDER"
-                        size_hint_x: 0.3
+                        text: "SKIP"
+                        size_hint_x: 0.35
+                        size_hint_y: 0.8
+                        pos_hint: {'center_y': 0.5}
                         background_color: (0, 0, 0, 0)
                         background_normal: ''
-                        font_size: '11sp'
+                        font_size: '12sp'
                         bold: True
                         color: (1, 1, 1, 1)
                         canvas.before:
