@@ -1,63 +1,3 @@
-<MainMenu>:
-    canvas.before:
-        Color:
-            rgba: (0.05, 0.05, 0.07, 1)
-        Rectangle:
-            pos: self.pos
-            size: self.size
-
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 50
-        spacing: 20
-        
-        Label:
-            text: "PC BUILDER\n[color=#33ccff]TYCOON[/color]"
-            markup: True
-            font_size: '60sp'
-            bold: True
-            halign: 'center'
-            size_hint_y: 0.6
-            
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: 0.4
-            size_hint_x: 0.4
-            pos_hint: {'center_x': 0.5}
-            spacing: 15
-            
-            Button:
-                text: "START GAME"
-                font_size: '20sp'
-                bold: True
-                background_color: (0,0,0,0)
-                background_normal: ''
-                canvas.before:
-                    Color:
-                        rgba: (0.1, 0.7, 0.3, 1) if self.state == 'normal' else (0.05, 0.5, 0.2, 1)
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [10]
-                on_release: 
-                    app.root.transition.direction = 'left'
-                    app.root.current = 'main'
-                    
-            Button:
-                text: "EXIT"
-                font_size: '20sp'
-                bold: True
-                background_color: (0,0,0,0)
-                background_normal: ''
-                canvas.before:
-                    Color:
-                        rgba: (0.8, 0.2, 0.2, 1) if self.state == 'normal' else (0.6, 0.1, 0.1, 1)
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [10]
-                on_release: app.stop()
-
 <MenuButton@Button>:
     background_color: (0, 0, 0, 0)
     background_normal: ''
@@ -89,6 +29,100 @@
             size: self.size
             radius: [10]
 
+<MainMenu>:
+    canvas.before:
+        Color:
+            rgba: (0.05, 0.05, 0.07, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        
+        Label:
+            text: "PC BUILDER TYCOON"
+            font_size: '40sp'
+            bold: True
+            color: (0.2, 0.8, 1, 1)
+            size_hint_y: 0.6
+            
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            width: "300dp"
+            height: self.minimum_height
+            pos_hint: {'center_x': 0.5}
+            
+            Button:
+                text: "CONTINUE"
+                font_size: '18sp' if root.has_started else '1sp'
+                color: (1, 1, 1, 1) if root.has_started else (1, 1, 1, 0)
+                bold: True
+                size_hint_y: None
+                height: "50dp" if root.has_started else 0
+                opacity: 1 if root.has_started else 0
+                disabled: not root.has_started
+                background_color: (0,0,0,0)
+                background_normal: ''
+                canvas.before:
+                    Color:
+                        rgba: (0.1, 0.7, 0.3, 1) if self.state == 'normal' else (0.05, 0.5, 0.2, 1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+                on_release: 
+                    app.root.transition.direction = 'left'
+                    app.root.current = 'main'
+
+            Widget:
+                size_hint_y: None
+                height: "15dp" if root.has_started else 0
+
+            Button:
+                text: "NEW GAME"
+                font_size: '18sp'
+                bold: True
+                size_hint_y: None
+                height: "50dp"
+                background_color: (0,0,0,0)
+                background_normal: ''
+                canvas.before:
+                    Color:
+                        rgba: (0.1, 0.5, 0.8, 1) if self.state == 'normal' else (0.05, 0.3, 0.6, 1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+                on_release: 
+                    app.root.get_screen('main').reset_game()
+                    root.has_started = True
+                    app.root.transition.direction = 'left'
+                    app.root.current = 'main'
+                    
+            Widget:
+                size_hint_y: None
+                height: "15dp"
+
+            Button:
+                text: "EXIT"
+                font_size: '18sp'
+                bold: True
+                size_hint_y: None
+                height: "50dp"
+                background_color: (0,0,0,0)
+                background_normal: ''
+                canvas.before:
+                    Color:
+                        rgba: (0.8, 0.2, 0.2, 1) if self.state == 'normal' else (0.6, 0.1, 0.1, 1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+                on_release: app.stop()
+
 <MainGame>:
     BoxLayout:
         orientation: 'vertical'
@@ -109,10 +143,6 @@
                     on_release: 
                         app.root.transition.direction = 'right'
                         app.root.current = 'menu'
-                ActionButton: 
-                    text: "NEW GAME"
-                    bold: True
-                    on_release: root.reset_game()
 
         BoxLayout:
             size_hint_y: 0.18
@@ -130,7 +160,7 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [15]
+                        radius: [10]
                 
                 BoxLayout:
                     orientation: 'vertical'
@@ -199,7 +229,6 @@
                         halign: 'left'
                         valign: 'middle'
             
-            # Section: Current Order
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: 0.5
@@ -210,29 +239,20 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [15]
+                        radius: [10]
                 Label:
-                    text: "📋 CURRENT ORDER"
-                    font_size: '12sp'
-                    bold: True
-                    color: (0.5, 0.5, 0.6, 1)
-                    size_hint_y: 0.15
-                    text_size: self.size
-                    halign: 'left'
-                    valign: 'middle'
-                Label:
-                    text: root.current_order
-                    font_size: '15sp'
+                    text: "CURRENT ORDER : " + root.current_order
+                    font_size: '13sp'
                     bold: True
                     color: (0.2, 0.8, 1, 1)
-                    size_hint_y: 0.2
+                    size_hint_y: 0.25
                     text_size: self.size
                     halign: 'left'
                     valign: 'middle'
                 
                 GridLayout:
                     cols: 2
-                    size_hint_y: 0.35
+                    size_hint_y: 0.4
                     Label:
                         text: root.required_cpu_display
                         font_size: '11sp'
@@ -263,7 +283,7 @@
                         valign: 'middle'
                 
                 BoxLayout:
-                    size_hint_y: 0.3
+                    size_hint_y: 0.35
                     spacing: 10
                     BoxLayout:
                         orientation: 'vertical'
@@ -300,7 +320,7 @@
                             RoundedRectangle:
                                 pos: self.pos
                                 size: self.size
-                                radius: [8]
+                                radius: [6]
                         on_release: root.skip_day()
 
         Label:
@@ -332,10 +352,10 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [15]
+                        radius: [10]
                 
                 Label: 
-                    text: "🛒 PARTS SHOP"
+                    text: "PARTS SHOP"
                     size_hint_y: 0.05
                     font_size: '14sp'
                     bold: True
@@ -398,10 +418,10 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [15]
+                        radius: [10]
                 
                 Label:
-                    text: "🔧 ASSEMBLY BENCH"
+                    text: "ASSEMBLY BENCH"
                     size_hint_y: 0.05
                     font_size: '14sp'
                     bold: True
@@ -548,10 +568,10 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [15]
+                        radius: [10]
                 
                 Label:
-                    text: "⚡ SYSTEM SPECS"
+                    text: "SYSTEM SPECS"
                     size_hint_y: 0.05
                     font_size: '14sp'
                     bold: True
@@ -569,7 +589,7 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [10]
+                            radius: [8]
                     padding: 10
                     Label:
                         text: "Total Power Draw"
@@ -602,7 +622,7 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [10]
+                            radius: [8]
                     padding: 10
                     Label:
                         text: "Build Status"
@@ -613,7 +633,7 @@
                     Label:
                         text: root.pc_status
                         color: (0.2, 0.9, 0.5, 1) if root.pc_status == "Ready to sell!" else ((1, 0.3, 0.3, 1) if root.pc_status == "Power overload!" else (1, 0.8, 0.2, 1))
-                        font_size: '18sp'
+                        font_size: '16sp'
                         bold: True
                         text_size: self.size
                         halign: 'left'
@@ -623,7 +643,7 @@
                     size_hint_y: 0.1
 
                 Button:
-                    text: "✓ FULFILL ORDER"
+                    text: "FULFILL ORDER"
                     background_color: (0, 0, 0, 0)
                     background_normal: ''
                     size_hint_y: 0.3
@@ -636,5 +656,5 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [12]
+                            radius: [8]
                     on_press: root.on_sell_pc()

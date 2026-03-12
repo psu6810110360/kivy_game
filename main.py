@@ -3,17 +3,17 @@ import random
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
-from kivy.properties import NumericProperty, StringProperty
+from kivy.properties import NumericProperty, StringProperty, BooleanProperty
 from kivy.clock import Clock
 from kivy.factory import Factory
 from gamedata import CUSTOMER_ORDERS, PARTS_ITEMS
 
 current_dir = os.path.dirname(__file__)
-Builder.load_file(os.path.join(current_dir, "pcbuilder.kv"))
+Builder.load_file(os.path.join(current_dir, "pcbuilder.kv"), encoding="utf-8")
 
 
 class MainMenu(Screen):
-    pass
+    has_started = BooleanProperty(False)
 
 
 class MainGame(Screen):
