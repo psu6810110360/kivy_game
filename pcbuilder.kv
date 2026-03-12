@@ -7,7 +7,9 @@
         Color:
             rgba: (0.1, 0.5, 0.8, 0.8) if self.state == 'normal' else (0.1, 0.8, 1, 1)
         RoundedRectangle:
-            pos: self.pos; size: self.size; radius: [8]
+            pos: self.pos
+            size: self.size
+            radius: [8]
         Color:
             rgba: (0, 1, 1, 0.3)
         Line:
@@ -18,67 +20,91 @@
     FloatLayout:
         AsyncImage:
             source: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?q=80&w=1920'
-            allow_stretch: True; keep_ratio: False
-        canvas.after:
-            Color:
-                rgba: (0, 0, 0, 0.6)
-            Rectangle:
-                pos: self.pos; size: self.size
+            allow_stretch: True
+            keep_ratio: False
+            canvas.after:
+                Color:
+                    rgba: (0, 0, 0, 0.6)
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
         BoxLayout:
             orientation: 'vertical'
-            padding: 50; spacing: 20
+            padding: 50
+            spacing: 20
             Label:
                 text: "PC BUILDER\n[color=#33ccff]NEON TYCOON[/color]"
-                markup: True; font_size: '50sp'; bold: True; halign: 'center'
+                markup: True
+                font_size: '50sp'
+                bold: True
+                halign: 'center'
                 size_hint_y: 0.5
             
             BoxLayout:
                 orientation: 'vertical'
-                size_hint: None, None; width: "250dp"; height: self.minimum_height
-                pos_hint: {'center_x': 0.5}; spacing: 15
+                size_hint: None, None
+                width: "250dp"
+                height: self.minimum_height
+                pos_hint: {'center_x': 0.5}
+                spacing: 15
                 
                 Button:
                     text: "CONTINUE"
-                    size_hint_y: None; height: "55dp" if root.has_started else 0
+                    size_hint_y: None
+                    height: "55dp" if root.has_started else 0
                     opacity: 1 if root.has_started else 0
                     disabled: not root.has_started
                     background_color: (0.2, 0.8, 0.2, 1)
-                    on_release: app.root.current = 'main'
+                    on_release: 
+                        root.play_sfx()
+                        app.root.current = 'main'
                 
                 Button:
                     text: "NEW GAME"
-                    size_hint_y: None; height: "55dp"
+                    size_hint_y: None
+                    height: "55dp"
                     background_color: (0.1, 0.6, 0.9, 1)
                     on_release: 
+                        root.play_sfx()
                         app.root.get_screen('main').reset_game()
                         root.has_started = True
                         app.root.current = 'main'
                 
                 Button:
                     text: "SETTINGS"
-                    size_hint_y: None; height: "55dp"
-                    on_release: app.root.current = 'settings'
+                    size_hint_y: None
+                    height: "55dp"
+                    on_release: 
+                        root.play_sfx()
+                        app.root.current = 'settings'
 
                 Button:
                     text: "EXIT"
-                    size_hint_y: None; height: "55dp"
+                    size_hint_y: None
+                    height: "55dp"
                     background_color: (0.8, 0.2, 0.2, 1)
-                    on_release: app.stop()
+                    on_release: 
+                        root.play_sfx()
+                        app.stop()
 
 <SettingsScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: 50; spacing: 30
+        padding: 50
+        spacing: 30
         canvas.before:
             Color:
                 rgba: (0.05, 0.05, 0.1, 1)
             Rectangle:
-                pos: self.pos; size: self.size
+                pos: self.pos
+                size: self.size
         
         Label:
             text: "SETTINGS"
-            font_size: '32sp'; bold: True; color: (0, 0.8, 1, 1)
+            font_size: '32sp'
+            bold: True
+            color: (0, 0.8, 1, 1)
             size_hint_y: 0.2
 
         BoxLayout:
@@ -88,19 +114,24 @@
                 text: "Music Volume: " + str(int(music_slider.value * 100)) + "%"
             Slider:
                 id: music_slider
-                min: 0; max: 1; value: app.music_volume
+                min: 0
+                max: 1
+                value: app.music_volume
                 on_value: app.music_volume = self.value
             
             Label:
                 text: "SFX Volume: " + str(int(sfx_slider.value * 100)) + "%"
             Slider:
                 id: sfx_slider
-                min: 0; max: 1; value: app.sfx_volume
+                min: 0
+                max: 1
+                value: app.sfx_volume
                 on_value: app.sfx_volume = self.value
 
         Button:
             text: "BACK"
-            size_hint: None, None; size: "200dp", "55dp"
+            size_hint: None, None
+            size: "200dp", "55dp"
             pos_hint: {'center_x': 0.5}
             on_release: app.root.current = 'menu'
 
@@ -108,7 +139,8 @@
     FloatLayout:
         AsyncImage:
             source: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?q=80&w=1920'
-            allow_stretch: True; keep_ratio: False
+            allow_stretch: True
+            keep_ratio: False
         
         BoxLayout:
             orientation: 'vertical'
@@ -116,98 +148,190 @@
                 Color:
                     rgba: (0.02, 0.02, 0.05, 0.85)
                 Rectangle:
-                    pos: self.pos; size: self.size
+                    pos: self.pos
+                    size: self.size
 
             ActionBar:
                 background_color: (0.1, 0.1, 0.2, 1)
                 ActionView:
                     ActionPrevious: 
-                        title: "WORKSHOP"; with_previous: True
+                        title: "WORKSHOP"
+                        with_previous: True
                         on_release: app.root.current = 'menu'
 
             BoxLayout:
-                size_hint_y: 0.15; padding: 10; spacing: 10
-                # Wallet
+                size_hint_y: 0.15
+                padding: 10
+                spacing: 10
                 BoxLayout:
                     orientation: 'vertical'
                     canvas.before:
-                        Color: rgba: (0.1, 0.1, 0.2, 1)
-                        RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+                        Color:
+                            rgba: (0.1, 0.1, 0.2, 1)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [10]
                     Label:
                         text: "CASH: $" + f"{int(root.money):,}"
-                        font_size: '20sp'; bold: True; color: (0.2, 1, 0.5, 1)
+                        font_size: '20sp'
+                        bold: True
+                        color: (0.2, 1, 0.5, 1)
                     Label:
                         text: "DAY " + str(int(root.current_day))
                 
-                # Order Info
                 BoxLayout:
-                    orientation: 'vertical'; padding: 5
+                    orientation: 'vertical'
+                    padding: 5
                     canvas.before:
-                        Color: rgba: (0.2, 0.1, 0.3, 1)
-                        RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+                        Color:
+                            rgba: (0.2, 0.1, 0.3, 1)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [10]
                     Label:
                         text: "TARGET: " + root.current_order
-                        bold: True; color: (1, 0.5, 1, 1); font_size: '12sp'
+                        bold: True
+                        color: (1, 0.5, 1, 1)
+                        font_size: '12sp'
                     GridLayout:
                         cols: 2
-                        Label: text: root.required_cpu_display; font_size: '9sp'
-                        Label: text: root.required_gpu_display; font_size: '9sp'
-                        Label: text: root.required_ram_display; font_size: '9sp'
-                        Label: text: root.required_storage_display; font_size: '9sp'
+                        Label:
+                            text: root.required_cpu_display
+                            font_size: '9sp'
+                        Label:
+                            text: root.required_gpu_display
+                            font_size: '9sp'
+                        Label:
+                            text: root.required_ram_display
+                            font_size: '9sp'
+                        Label:
+                            text: root.required_storage_display
+                            font_size: '9sp'
 
             Label:
-                size_hint_y: 0.05; text: root.log_message; bold: True
+                size_hint_y: 0.05
+                text: root.log_message
+                bold: True
                 canvas.before:
-                    Color: rgba: (0, 0.4, 0.8, 0.5)
-                    Rectangle: pos: self.pos; size: self.size
+                    Color:
+                        rgba: (0, 0.4, 0.8, 0.5)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
-            # Main Content
             BoxLayout:
-                padding: 10; spacing: 10
-                # Shop Column
+                padding: 10
+                spacing: 10
                 BoxLayout:
-                    orientation: 'vertical'; size_hint_x: 0.35
+                    orientation: 'vertical'
+                    size_hint_x: 0.35
                     GridLayout:
-                        cols: 3; size_hint_y: 0.2; spacing: 5
-                        Button: text: "CPU"; on_release: root.set_category('CPU')
-                        Button: text: "MB"; on_release: root.set_category('MB')
-                        Button: text: "GPU"; on_release: root.set_category('GPU')
-                        Button: text: "RAM"; on_release: root.set_category('RAM')
-                        Button: text: "PSU"; on_release: root.set_category('PSU')
-                        Button: text: "ALL"; on_release: root.set_category('all')
+                        cols: 3
+                        size_hint_y: 0.2
+                        spacing: 5
+                        Button:
+                            text: "CPU"
+                            on_release: root.set_category('CPU')
+                        Button:
+                            text: "MB"
+                            on_release: root.set_category('MB')
+                        Button:
+                            text: "GPU"
+                            on_release: root.set_category('GPU')
+                        Button:
+                            text: "RAM"
+                            on_release: root.set_category('RAM')
+                        Button:
+                            text: "PSU"
+                            on_release: root.set_category('PSU')
+                        Button:
+                            text: "ALL"
+                            on_release: root.set_category('all')
                     ScrollView:
                         StackLayout:
-                            id: shop_list; size_hint_y: None; height: self.minimum_height; spacing: 5
+                            id: shop_list
+                            size_hint_y: None
+                            height: self.minimum_height
+                            spacing: 5
 
-                # Bench Column
                 BoxLayout:
-                    orientation: 'vertical'; size_hint_x: 0.4; padding: 15
+                    orientation: 'vertical'
+                    size_hint_x: 0.4
+                    padding: 15
                     canvas.before:
-                        Color: rgba: (0.1, 0.1, 0.15, 0.9)
-                        RoundedRectangle: pos: self.pos; size: self.size; radius: [15]
-                    Label: text: "[color=#33ccff]ASSEMBLY BENCH[/color]"; markup: True; bold: True; size_hint_y: 0.1
-                    Label: text: "CPU: " + root.installed_cpu; halign: 'left'; text_size: self.size
-                    Label: text: "MB: " + root.installed_mb; halign: 'left'; text_size: self.size
-                    Label: text: "GPU: " + root.installed_gpu; halign: 'left'; text_size: self.size
-                    Label: text: "RAM: " + root.installed_ram; halign: 'left'; text_size: self.size
-                    Label: text: "STORAGE: " + root.installed_storage; halign: 'left'; text_size: self.size
-                    Label: text: "PSU: " + root.installed_psu; halign: 'left'; text_size: self.size
+                        Color:
+                            rgba: (0.1, 0.1, 0.15, 0.9)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [15]
+                    Label:
+                        text: "[color=#33ccff]ASSEMBLY BENCH[/color]"
+                        markup: True
+                        bold: True
+                        size_hint_y: 0.1
+                    Label:
+                        text: "CPU: " + root.installed_cpu
+                        halign: 'left'
+                        text_size: self.size
+                    Label:
+                        text: "MB: " + root.installed_mb
+                        halign: 'left'
+                        text_size: self.size
+                    Label:
+                        text: "GPU: " + root.installed_gpu
+                        halign: 'left'
+                        text_size: self.size
+                    Label:
+                        text: "RAM: " + root.installed_ram
+                        halign: 'left'
+                        text_size: self.size
+                    Label:
+                        text: "STORAGE: " + root.installed_storage
+                        halign: 'left'
+                        text_size: self.size
+                    Label:
+                        text: "PSU: " + root.installed_psu
+                        halign: 'left'
+                        text_size: self.size
 
-                # Stats Column
                 BoxLayout:
-                    orientation: 'vertical'; size_hint_x: 0.25; spacing: 15
+                    orientation: 'vertical'
+                    size_hint_x: 0.25
+                    spacing: 15
                     canvas.before:
-                        Color: rgba: (0.1, 0.1, 0.15, 0.9)
-                        RoundedRectangle: pos: self.pos; size: self.size; radius: [15]
-                    Label: text: "POWER USAGE"; bold: True; size_hint_y: 0.1
+                        Color:
+                            rgba: (0.1, 0.1, 0.15, 0.9)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [15]
+                    Label:
+                        text: "POWER USAGE"
+                        bold: True
+                        size_hint_y: 0.1
                     Label: 
                         text: str(int(root.total_wattage)) + "W"
-                        font_size: '24sp'; bold: True
+                        font_size: '24sp'
+                        bold: True
                         color: (1, 0.3, 0.3, 1) if root.pc_status == "Power overload!" else (0.2, 1, 0.5, 1)
-                    ProgressBar: max: 1200; value: root.total_wattage; size_hint_y: None; height: 15
-                    Label: text: root.pc_status; bold: True
+                    ProgressBar:
+                        max: 1200
+                        value: root.total_wattage
+                        size_hint_y: None
+                        height: 15
+                    Label:
+                        text: root.pc_status
+                        bold: True
                     Button:
-                        text: "SELL PC"; size_hint_y: 0.3; bold: True; background_color: (0.2, 0.8, 0.2, 1)
+                        text: "SELL PC"
+                        size_hint_y: 0.3
+                        bold: True
+                        background_color: (0.2, 0.8, 0.2, 1)
                         on_release: root.on_sell_pc()
                     Button:
-                        text: "SKIP"; size_hint_y: 0.15; on_release: root.skip_order()
+                        text: "SKIP"
+                        size_hint_y: 0.15
+                        on_release: root.skip_order()

@@ -19,6 +19,12 @@ class MainMenu(Screen):
         # ตรวจสอบไฟล์เซฟเพื่อแสดงปุ่ม CONTINUE
         if os.path.exists(os.path.join(current_dir, "savegame.json")):
             self.has_started = True
+    
+    def play_sfx(self):
+        sfx = SoundLoader.load('click.wav')
+        if sfx:
+            sfx.volume = App.get_running_app().sfx_volume
+            sfx.play()
 
 class SettingsScreen(Screen):
     pass
