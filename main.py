@@ -9,6 +9,7 @@ from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.core.audio import SoundLoader
 from gamedata import CUSTOMER_ORDERS, PARTS_ITEMS
+from kivy.core.window import Window
 
 current_dir = os.path.dirname(__file__)
 Builder.load_file(os.path.join(current_dir, "pcbuilder.kv"), encoding="utf-8")
@@ -31,6 +32,13 @@ class SettingsScreen(Screen):
         if sfx:
             sfx.volume = App.get_running_app().sfx_volume
             sfx.play()
+            
+    def toggle_fullscreen(self):
+        self.play_sfx()
+        if Window.fullscreen == False:
+            Window.fullscreen = 'auto'  # เปิดเต็มจอ
+        else:
+            Window.fullscreen = False   # กลับเป็นหน้าต่างปกติ
 
 class MainGame(Screen):
     money = NumericProperty(3000)
