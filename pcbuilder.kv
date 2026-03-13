@@ -129,6 +129,14 @@
                 value: app.sfx_volume
                 on_value: app.sfx_volume = self.value
                 on_touch_up: if self.collide_point(*args[1].pos): root.play_sfx()
+        
+        Button:
+            text: "TOGGLE FULLSCREEN"
+            size_hint: None, None
+            size: "200dp", "55dp"
+            pos_hint: {'center_x': 0.5}
+            background_color: (0.5, 0.2, 0.8, 1)
+            on_release: root.toggle_fullscreen()
 
         Button:
             text: "BACK"
