@@ -32,7 +32,7 @@ class SettingsScreen(Screen):
         if sfx:
             sfx.volume = App.get_running_app().sfx_volume
             sfx.play()
-            
+
     def toggle_fullscreen(self):
         self.play_sfx()
         if Window.fullscreen == False:
@@ -213,6 +213,10 @@ class MainGame(Screen):
 
         self.check_next_customer()
 
+        if self.money >= 10000:
+            self.log_message = "WINNER! You reached $10,000! Tycoon Master!"
+            self.log_color = [1, 0.8, 0, 1]
+
     def skip_order(self):
         self.play_sfx()
         for k, v in self.installed_parts.items():
@@ -272,6 +276,13 @@ class MainGame(Screen):
         self.clear_bench()
         self.generate_new_order()
         self.save_game()
+
+        if self.money < 0:
+            self.daily_event = "BANKRUPT! Out of business."
+            # หากมีตัวแปร event_color ให้ใส่: self.event_color = [1, 0, 0, 1]
+            self.log_message = "GAME OVER. Please Start New Game."
+            self.log_color = [1, 0, 0, 1]
+            self.customers_today = 0
     
     def clear_bench(self):
         self.installed_parts = {k: None for k in ["CPU","MB","GPU","RAM","PSU","Storage","Case"]}
