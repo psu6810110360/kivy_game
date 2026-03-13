@@ -182,6 +182,21 @@ class MainGame(Screen):
         
         self.clear_bench() # เปลี่ยนไปเรียกฟังก์ชันเคลียร์โต๊ะแทน
         self.generate_new_order(); self.save_game()
+    
+    def clear_bench(self):
+        self.installed_parts = {k: None for k in ["CPU","MB","GPU","RAM","PSU","Storage","Case"]}
+        for p in ["cpu","mb","psu","gpu","ram","storage","case"]: setattr(self, f"installed_{p}", "None")
+        self.total_wattage = self.base_system_watt; self.current_build_cost = 0
+        self.update_status()
+
+    def check_next_customer(self):
+        self.customers_today -= 1
+        if self.customers_today > 0:
+            self.clear_bench()
+            self.generate_new_order()
+            self.save_game()
+        else:
+            self.next_day()
 
     def save_game(self):
         data = {"money": self.money, "day": self.current_day, "rep": self.reputation, "parts": self.installed_parts, "order": self.current_order_specs}

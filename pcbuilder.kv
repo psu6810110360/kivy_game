@@ -185,6 +185,14 @@
                         color: (0.2, 1, 0.5, 1)
                     Label:
                         text: "DAY " + str(int(root.current_day))
+                    Label:
+                        text: "CUSTOMERS: " + str(int(root.customers_today))
+                        color: (1, 0.8, 0, 1)
+                        font_size: '12sp'
+                    Label:
+                        text: "EVENT: " + root.daily_event
+                        color: (0, 1, 1, 1)
+                        font_size: '10sp'
                 
                 BoxLayout:
                     orientation: 'vertical'
