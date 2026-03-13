@@ -16,7 +16,6 @@ Builder.load_file(os.path.join(current_dir, "pcbuilder.kv"), encoding="utf-8")
 class MainMenu(Screen):
     has_started = BooleanProperty(False)
     def on_enter(self):
-        # ตรวจสอบไฟล์เซฟเพื่อแสดงปุ่ม CONTINUE
         if os.path.exists(os.path.join(current_dir, "savegame.json")):
             self.has_started = True
     
@@ -46,17 +45,21 @@ class MainGame(Screen):
     customers_today = NumericProperty(1)
     daily_event = StringProperty("Normal Day")
     
-    # ส่วนแสดงผลความต้องการของลูกค้า
-    required_cpu_display = StringProperty(""); required_gpu_display = StringProperty("")
-    required_ram_display = StringProperty(""); required_storage_display = StringProperty("")
+    required_cpu_display = StringProperty("")
+    required_gpu_display = StringProperty("")
+    required_ram_display = StringProperty("")
+    required_storage_display = StringProperty("")
     
-    # ส่วนแสดงผลอุปกรณ์ที่ติดตั้งแล้ว
-    installed_cpu = StringProperty("None"); installed_mb = StringProperty("None")
-    installed_psu = StringProperty("None"); installed_gpu = StringProperty("None")
-    installed_ram = StringProperty("None"); installed_storage = StringProperty("None")
+    installed_cpu = StringProperty("None")
+    installed_mb = StringProperty("None")
+    installed_psu = StringProperty("None")
+    installed_gpu = StringProperty("None")
+    installed_ram = StringProperty("None")
+    installed_storage = StringProperty("None")
     installed_case = StringProperty("None")
     
-    total_wattage = NumericProperty(50); base_system_watt = 50
+    total_wattage = NumericProperty(50)
+    base_system_watt = 50
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -71,7 +74,6 @@ class MainGame(Screen):
         self.populate_shop(0)
 
     def play_sfx(self):
-        # โหลดและเล่นเสียงคลิก (อ้างอิงระดับเสียงจาก Settings)
         sfx = SoundLoader.load('click.wav')
         if sfx:
             sfx.volume = App.get_running_app().sfx_volume
@@ -98,7 +100,8 @@ class MainGame(Screen):
         self.required_gpu_display = f"GPU: {s['required_gpu']}"
         self.required_ram_display = f"RAM: {s['required_ram']}"
         self.required_storage_display = f"Storage: {s['required_storage']}"
-        self.budget_remaining = s["budget"]; self.current_build_cost = 0
+        self.budget_remaining = s["budget"]
+        self.current_build_cost = 0
 
     def buy_part(self, item):
         self.play_sfx()
@@ -106,26 +109,24 @@ class MainGame(Screen):
             self.log_message = "NOT ENOUGH CASH!"; return
         
         part_type = item["type"]
-        # เช็คความเข้ากันได้ของ Socket
         if part_type == "CPU" and self.installed_parts["MB"] and item["socket"] != self.installed_parts["MB"]["socket"]:
             self.log_message = "SOCKET MISMATCH!"; return
         if part_type == "MB" and self.installed_parts["CPU"] and item["socket"] != self.installed_parts["CPU"]["socket"]:
             self.log_message = "SOCKET MISMATCH!"; return
 
-        # ถอดของเก่าคืนเงิน
         old = self.installed_parts[part_type]
         if old:
             self.money += old["price"]; self.current_build_cost -= old["price"]
             if "watt" in old: self.total_wattage -= old["watt"]
 
-        # ติดตั้งของใหม่
         self.installed_parts[part_type] = item
         self.money -= item["price"]; self.current_build_cost += item["price"]
         if "watt" in item: self.total_wattage += item["watt"]
         
         self.budget_remaining = self.current_order_specs["budget"] - self.current_build_cost
         setattr(self, f"installed_{part_type.lower()}", item["name"])
-        self.log_message = f"Installed {item['name']}"; self.update_status()
+        self.log_message = f"Installed {item['name']}"
+        self.update_status()
 
     def update_status(self):
         is_complete = all(v is not None for v in self.installed_parts.values())
@@ -153,20 +154,20 @@ class MainGame(Screen):
             self.money += sell_price; self.reputation = max(0, self.reputation - 5)
             self.log_message = "Order mismatch! Low profit."
 
-        self.next_day()
+        self.check_next_customer()
 
     def skip_order(self):
         self.play_sfx()
         for k, v in self.installed_parts.items():
             if v: self.money += v["price"]
-        self.reputation = max(0, self.reputation - 5); self.log_message = "Skipped client."; self.next_day()
+        self.reputation = max(0, self.reputation - 5)
+        self.log_message = "Skipped client."
+        self.check_next_customer()
 
     def next_day(self):
-        def next_day(self):
-        # หักค่าเช่าร้านอัตโนมัติ
-            self.current_day += 1; self.money -= self.daily_rent
+        self.current_day += 1
+        self.money -= self.daily_rent
         
-        # --- ระบบ Event และ สุ่มลูกค้า ---
         events = [
             "Normal Day. Business as usual.",
             "Tech Expo! +5 Reputation.",
@@ -177,11 +178,10 @@ class MainGame(Screen):
         if "Tech Expo" in self.daily_event:
             self.reputation = min(100, self.reputation + 5)
             
-        self.customers_today = random.randint(1, 3) # สุ่มลูกค้า 1-3 คนต่อวัน
-        # -----------------------------
-        
-        self.clear_bench() # เปลี่ยนไปเรียกฟังก์ชันเคลียร์โต๊ะแทน
-        self.generate_new_order(); self.save_game()
+        self.customers_today = random.randint(1, 3)
+        self.clear_bench()
+        self.generate_new_order()
+        self.save_game()
     
     def clear_bench(self):
         self.installed_parts = {k: None for k in ["CPU","MB","GPU","RAM","PSU","Storage","Case"]}
@@ -223,10 +223,10 @@ class MainGame(Screen):
 
     def reset_game(self):
         self.money = 3000; self.current_day = 1; self.reputation = 50
-        self.installed_parts = {k: None for k in ["CPU","MB","GPU","RAM","PSU","Storage","Case"]}
-        for p in ["cpu","mb","psu","gpu","ram","storage","case"]: setattr(self, f"installed_{p}", "None")
-        self.total_wattage = self.base_system_watt; self.current_build_cost = 0
-        self.log_message = "New Game Started!"; self.update_status(); self.generate_new_order(); self.save_game()
+        self.clear_bench()
+        self.log_message = "New Game Started!"
+        self.generate_new_order()
+        self.save_game()
 
 class PCBuilderApp(App):
     music_volume = NumericProperty(0.5)
@@ -235,7 +235,6 @@ class PCBuilderApp(App):
 
     def build(self):
         self.title = "Neon PC Tycoon"
-        # โหลดเพลง BGM อัตโนมัติ (ห้ามลบ .mp3 ออกนะครับ)
         self.bgm = SoundLoader.load('bgm.mp3')
         if self.bgm:
             self.bgm.loop = True
