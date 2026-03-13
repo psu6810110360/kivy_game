@@ -4,7 +4,7 @@ import json
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
-from kivy.properties import NumericProperty, StringProperty, BooleanProperty, ObjectProperty
+from kivy.properties import NumericProperty, StringProperty, BooleanProperty, ObjectProperty, ListProperty
 from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.core.audio import SoundLoader
@@ -21,6 +21,12 @@ class MainMenu(Screen):
     
     def play_sfx(self):
         sfx = SoundLoader.load('click.wav')
+        if sfx:
+            sfx.volume = App.get_running_app().sfx_volume
+            sfx.play()
+    
+    def play_error_sfx(self):
+        sfx = SoundLoader.load('error.wav')
         if sfx:
             sfx.volume = App.get_running_app().sfx_volume
             sfx.play()
