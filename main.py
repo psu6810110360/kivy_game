@@ -43,6 +43,8 @@ class MainGame(Screen):
     current_order = StringProperty("")
     current_build_cost = NumericProperty(0)
     budget_remaining = NumericProperty(0)
+    customers_today = NumericProperty(1)
+    daily_event = StringProperty("Normal Day")
     
     # ส่วนแสดงผลความต้องการของลูกค้า
     required_cpu_display = StringProperty(""); required_gpu_display = StringProperty("")
@@ -160,12 +162,26 @@ class MainGame(Screen):
         self.reputation = max(0, self.reputation - 5); self.log_message = "Skipped client."; self.next_day()
 
     def next_day(self):
+        def next_day(self):
         # หักค่าเช่าร้านอัตโนมัติ
-        self.current_day += 1; self.money -= self.daily_rent
-        self.installed_parts = {k: None for k in self.installed_parts}
-        for p in ["cpu","mb","psu","gpu","ram","storage","case"]: setattr(self, f"installed_{p}", "None")
-        self.total_wattage = self.base_system_watt; self.current_build_cost = 0
-        self.update_status(); self.generate_new_order(); self.save_game()
+            self.current_day += 1; self.money -= self.daily_rent
+        
+        # --- ระบบ Event และ สุ่มลูกค้า ---
+        events = [
+            "Normal Day. Business as usual.",
+            "Tech Expo! +5 Reputation.",
+            "Quiet day. Not many people.",
+            "Crypto Boom! High PC demand."
+        ]
+        self.daily_event = random.choice(events)
+        if "Tech Expo" in self.daily_event:
+            self.reputation = min(100, self.reputation + 5)
+            
+        self.customers_today = random.randint(1, 3) # สุ่มลูกค้า 1-3 คนต่อวัน
+        # -----------------------------
+        
+        self.clear_bench() # เปลี่ยนไปเรียกฟังก์ชันเคลียร์โต๊ะแทน
+        self.generate_new_order(); self.save_game()
 
     def save_game(self):
         data = {"money": self.money, "day": self.current_day, "rep": self.reputation, "parts": self.installed_parts, "order": self.current_order_specs}
