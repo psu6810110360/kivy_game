@@ -346,6 +346,7 @@ class PCBuilderApp(App):
         sm.add_widget(MainMenu(name="menu"))
         sm.add_widget(MainGame(name="main"))
         sm.add_widget(SettingsScreen(name="settings"))
+        Window.bind(on_keyboard=self.on_keyboard)
         return sm
 
     def on_music_volume(self, instance, value):
