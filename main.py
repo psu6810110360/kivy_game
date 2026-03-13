@@ -44,6 +44,7 @@ class MainGame(Screen):
     budget_remaining = NumericProperty(0)
     customers_today = NumericProperty(1)
     daily_event = StringProperty("Normal Day")
+    event_color = ListProperty([0, 1, 1, 1])  # ค่าเริ่มต้นสีฟ้า
     power_bg_color = ListProperty([0.1, 0.1, 0.15, 0.9])
     log_color = ListProperty([0, 0.4, 0.8, 0.5])
     
