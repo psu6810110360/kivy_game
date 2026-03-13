@@ -110,28 +110,48 @@ class MainGame(Screen):
         self.current_build_cost = 0
 
     def buy_part(self, item):
-        self.play_sfx()
-        if self.money < item["price"]:
-            self.log_message = "NOT ENOUGH CASH!"; return
-        
         part_type = item["type"]
+        
+        # 1. เช็คเงิน
+        if self.money < item["price"]:
+            self.log_message = "NOT ENOUGH CASH!"
+            self.log_color = [0.9, 0.1, 0.1, 0.8] # เปลี่ยนเป็นสีแดง
+            self.play_error_sfx()
+            return
+        
+        # 2. เช็คความเข้ากันได้ของ Socket
         if part_type == "CPU" and self.installed_parts["MB"] and item["socket"] != self.installed_parts["MB"]["socket"]:
-            self.log_message = "SOCKET MISMATCH!"; return
+            self.log_message = "SOCKET MISMATCH!"
+            self.log_color = [0.9, 0.1, 0.1, 0.8] # เปลี่ยนเป็นสีแดง
+            self.play_error_sfx()
+            return
+            
         if part_type == "MB" and self.installed_parts["CPU"] and item["socket"] != self.installed_parts["CPU"]["socket"]:
-            self.log_message = "SOCKET MISMATCH!"; return
+            self.log_message = "SOCKET MISMATCH!"
+            self.log_color = [0.9, 0.1, 0.1, 0.8] # เปลี่ยนเป็นสีแดง
+            self.play_error_sfx()
+            return
 
+        # ถ้าผ่านเงื่อนไขหมด ค่อยเล่นเสียงซื้อของสำเร็จ
+        self.play_sfx()
+
+        # ถอดของเก่าคืนเงิน
         old = self.installed_parts[part_type]
         if old:
             self.money += old["price"]; self.current_build_cost -= old["price"]
             if "watt" in old: self.total_wattage -= old["watt"]
 
+        # ติดตั้งของใหม่
         self.installed_parts[part_type] = item
         self.money -= item["price"]; self.current_build_cost += item["price"]
         if "watt" in item: self.total_wattage += item["watt"]
         
         self.budget_remaining = self.current_order_specs["budget"] - self.current_build_cost
         setattr(self, f"installed_{part_type.lower()}", item["name"])
+        
+        # เปลี่ยนข้อความและสีกลับเป็นสีฟ้าปกติ
         self.log_message = f"Installed {item['name']}"
+        self.log_color = [0, 0.4, 0.8, 0.5] 
         self.update_status()
 
     def update_status(self):
