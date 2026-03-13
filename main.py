@@ -351,5 +351,15 @@ class PCBuilderApp(App):
     def on_music_volume(self, instance, value):
         if self.bgm: self.bgm.volume = value
 
+    # ---> ก๊อปปี้ฟังก์ชันนี้ไปวางต่อท้ายใน class PCBuilderApp <---
+    def on_keyboard(self, window, key, scancode, codepoint, modifier):
+        if key == 292:  # รหัส 292 คือปุ่ม F11 ใน Kivy
+            if Window.fullscreen == False:
+                Window.fullscreen = 'auto'
+            else:
+                Window.fullscreen = False
+            return True  # คืนค่า True เพื่อบอกว่าระบบรับทราบการกดปุ่มนี้แล้ว
+        return False
+
 if __name__ == "__main__":
     PCBuilderApp().run()
