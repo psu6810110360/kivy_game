@@ -227,14 +227,8 @@
                         pos: self.pos
                         size: self.size
 
-            BoxLayout:
-                padding: 10
-                spacing: 10
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint_x: 0.35
-                    GridLayout:
-                        cols: 3
+            GridLayout:
+                        cols: 4  # <--- แก้ตรงนี้จาก 3 เป็น 4
                         size_hint_y: 0.2
                         spacing: 5
                         Button:
@@ -262,6 +256,16 @@
                             on_release: 
                                 root.play_sfx()
                                 root.set_category('PSU')
+                        Button:
+                            text: "STO" # ย่อจาก Storage
+                            on_release: 
+                                root.play_sfx()
+                                root.set_category('Storage')
+                        Button:
+                            text: "CASE"
+                            on_release: 
+                                root.play_sfx()
+                                root.set_category('Case')
                         Button:
                             text: "ALL"
                             on_release: 
