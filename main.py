@@ -133,6 +133,20 @@ class MainGame(Screen):
             self.log_color = [0.9, 0.1, 0.1, 0.8] # เปลี่ยนเป็นสีแดง
             self.play_error_sfx()
             return
+        
+        if part_type == "RAM" and self.installed_parts["MB"]:
+            if item.get("ram_type") != self.installed_parts["MB"].get("ram_type"):
+                self.log_message = f"RAM MISMATCH! Need {self.installed_parts['MB'].get('ram_type')}"
+                self.log_color = [0.9, 0.1, 0.1, 0.8]
+                self.play_error_sfx()
+                return
+                
+        if part_type == "MB" and self.installed_parts["RAM"]:
+            if item.get("ram_type") != self.installed_parts["RAM"].get("ram_type"):
+                self.log_message = "RAM MISMATCH! Remove RAM first."
+                self.log_color = [0.9, 0.1, 0.1, 0.8]
+                self.play_error_sfx()
+                return
 
         # ถ้าผ่านเงื่อนไขหมด ค่อยเล่นเสียงซื้อของสำเร็จ
         self.play_sfx()
