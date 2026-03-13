@@ -24,12 +24,6 @@ class MainMenu(Screen):
         if sfx:
             sfx.volume = App.get_running_app().sfx_volume
             sfx.play()
-    
-    def play_error_sfx(self):
-        sfx = SoundLoader.load('error.wav')
-        if sfx:
-            sfx.volume = App.get_running_app().sfx_volume
-            sfx.play()
 
 class SettingsScreen(Screen):
     def play_sfx(self):
@@ -50,6 +44,8 @@ class MainGame(Screen):
     budget_remaining = NumericProperty(0)
     customers_today = NumericProperty(1)
     daily_event = StringProperty("Normal Day")
+    power_bg_color = ListProperty([0.1, 0.1, 0.15, 0.9])
+    log_color = ListProperty([0, 0.4, 0.8, 0.5])
     
     required_cpu_display = StringProperty("")
     required_gpu_display = StringProperty("")
@@ -81,6 +77,12 @@ class MainGame(Screen):
 
     def play_sfx(self):
         sfx = SoundLoader.load('click.wav')
+        if sfx:
+            sfx.volume = App.get_running_app().sfx_volume
+            sfx.play()
+    
+    def play_error_sfx(self):
+        sfx = SoundLoader.load('error.wav')
         if sfx:
             sfx.volume = App.get_running_app().sfx_volume
             sfx.play()
@@ -158,9 +160,15 @@ class MainGame(Screen):
         is_complete = all(v is not None for v in self.installed_parts.values())
         if is_complete:
             psu = self.installed_parts["PSU"]
-            if self.total_wattage <= (psu["watt_limit"] * 0.8): self.pc_status = "Ready to sell!"
-            else: self.pc_status = "Power overload!"
-        else: self.pc_status = "Incomplete"
+            if self.total_wattage <= (psu["watt_limit"] * 0.8): 
+                self.pc_status = "Ready to sell!"
+                self.power_bg_color = [0.1, 0.4, 0.2, 0.9]  # เปลี่ยนกรอบเป็นสีเขียว
+            else: 
+                self.pc_status = "Power overload!"
+                self.power_bg_color = [0.8, 0.1, 0.1, 0.9]  # เปลี่ยนกรอบเป็นสีแดง
+        else: 
+            self.pc_status = "Incomplete"
+            self.power_bg_color = [0.1, 0.1, 0.15, 0.9]  # กลับเป็นสีเทาปกติ
 
     def on_sell_pc(self):
         self.play_sfx()
