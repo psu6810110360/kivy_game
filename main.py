@@ -213,20 +213,47 @@ class MainGame(Screen):
         self.check_next_customer()
 
     def next_day(self):
+        # 1. เปลี่ยนวันและหักค่าเช่า
         self.current_day += 1
         self.money -= self.daily_rent
         
-        events = [
-            "Normal Day. Business as usual.",
-            "Tech Expo! +5 Reputation.",
-            "Quiet day. Not many people.",
-            "Crypto Boom! High PC demand."
-        ]
-        self.daily_event = random.choice(events)
-        if "Tech Expo" in self.daily_event:
-            self.reputation = min(100, self.reputation + 5)
+        # 2. ระบบสุ่ม Event แบบใหม่ (ใช้ความน่าจะเป็น)
+        event_roll = random.randint(1, 100)
+        
+        if event_roll <= 40:
+            # โอกาส 40%: วันธรรมดา
+            self.daily_event = "Normal Day. Business as usual."
+            self.customers_today = random.randint(1, 3)
             
-        self.customers_today = random.randint(1, 3)
+        elif event_roll <= 55:
+            # โอกาส 15%: งานแฟร์ ลูกค้าเยอะขึ้นและได้ชื่อเสียง
+            self.daily_event = "Tech Expo! +5 Reputation."
+            self.reputation = min(100, self.reputation + 5)
+            self.customers_today = random.randint(2, 4)
+            
+        elif event_roll <= 70:
+            # โอกาส 15%: วันเงียบเหงา ลูกค้าน้อย
+            self.daily_event = "Quiet day. Not many people."
+            self.customers_today = 1
+            
+        elif event_roll <= 80:
+            # โอกาส 10%: กระแสคริปโตมาแรง ลูกค้าแห่มาซื้อคอม
+            self.daily_event = "Crypto Boom! High demand."
+            self.customers_today = random.randint(3, 5)
+            
+        elif event_roll <= 90:
+            # โอกาส 10%: โดนรีวิวแย่ เสียชื่อเสียง
+            self.daily_event = "Bad Reviews! -5 Reputation."
+            self.reputation = max(0, self.reputation - 5)
+            self.customers_today = random.randint(1, 2)
+            
+        else:
+            # โอกาส 10%: ซวยโดนเก็บค่าไฟ/ค่าเช่าเพิ่ม
+            self.daily_event = "Extra Bills! Lost $50."
+            self.money -= 50
+            self.customers_today = random.randint(1, 3)
+            
+        # 3. เคลียร์โต๊ะและเรียกลูกค้าคนแรกของวัน
         self.clear_bench()
         self.generate_new_order()
         self.save_game()
