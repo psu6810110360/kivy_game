@@ -249,6 +249,8 @@
                 size_hint_y: 0.8
                 padding: 10
                 spacing: 10
+
+                disabled: root.is_bankrupt or root.is_winner
                 
                 # คอลัมน์ 1: ร้านค้า (กว้าง 45%)
                 BoxLayout:

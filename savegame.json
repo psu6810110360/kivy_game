@@ -1,7 +1,7 @@
 {
-    "money": 57000,
-    "day": 3,
-    "rep": 35,
+    "money": 3000,
+    "day": 1,
+    "rep": 50,
     "parts": {
         "CPU": null,
         "MB": null,
@@ -12,13 +12,13 @@
         "Case": null
     },
     "order": {
-        "name": "Budget Gamer",
-        "budget": 950,
-        "required_gpu": "RX 6600",
-        "required_cpu": "Ryzen 5 5500 (AM4)",
-        "required_ram": "16GB DDR4",
-        "required_storage": "1TB NVMe Gen3",
-        "reward_multiplier": 0.4,
+        "name": "Office Build",
+        "budget": 750,
+        "required_gpu": "GTX 1650",
+        "required_cpu": "Core i3-12100 (LGA1700)",
+        "required_ram": "8GB DDR4",
+        "required_storage": "500GB SATA SSD",
+        "reward_multiplier": 0.3,
         "min_rep": 0
     }
 }

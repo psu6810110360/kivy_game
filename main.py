@@ -349,6 +349,8 @@ class MainGame(Screen):
         self.money = 3000; self.current_day = 1; self.reputation = 50
         self.is_bankrupt = False
         self.is_winner = False
+        self.daily_event = "Normal Day"
+        self.event_color = [0, 1, 1, 1]
         self.clear_bench()
         self.log_message = "New Game Started!"
         self.log_color = [0, 0.4, 0.8, 0.5]
