@@ -252,6 +252,7 @@ class MainGame(Screen):
         if self.money >= 10000:
             self.log_message = "WINNER! You reached $10,000! Tycoon Master!"
             self.log_color = [1, 0.8, 0, 1]
+            self.is_winner = True
 
     def next_day(self):
         self.current_day += 1

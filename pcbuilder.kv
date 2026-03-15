@@ -388,7 +388,7 @@
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
-            size: "300dp", "200dp"
+            size: ("300dp", "200dp") if root.is_bankrupt else (0, 0)
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             
             opacity: 1 if root.is_bankrupt else 0
@@ -429,7 +429,7 @@
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
-            size: "320dp", "200dp"
+            size: ("320dp", "200dp") if root.is_winner else (0, 0)
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             
             # ควบคุมการแสดงผลด้วยตัวแปร is_winner
