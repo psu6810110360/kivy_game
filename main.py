@@ -36,11 +36,13 @@ class SettingsScreen(Screen):
     def toggle_fullscreen(self):
         self.play_sfx()
         if Window.fullscreen == False:
-            Window.fullscreen = 'auto'  # เปิดเต็มจอ
+            Window.fullscreen = 'auto'
         else:
-            Window.fullscreen = False   # กลับเป็นหน้าต่างปกติ
+            Window.fullscreen = False
 
 class MainGame(Screen):
+    is_bankrupt = BooleanProperty(False)
+    is_winner = BooleanProperty(False) 
     money = NumericProperty(3000)
     current_day = NumericProperty(1)
     daily_rent = NumericProperty(100)
@@ -52,7 +54,7 @@ class MainGame(Screen):
     budget_remaining = NumericProperty(0)
     customers_today = NumericProperty(1)
     daily_event = StringProperty("Normal Day")
-    event_color = ListProperty([0, 1, 1, 1])  # ค่าเริ่มต้นสีฟ้า
+    event_color = ListProperty([0, 1, 1, 1])
     power_bg_color = ListProperty([0.1, 0.1, 0.15, 0.9])
     log_color = ListProperty([0, 0.4, 0.8, 0.5])
     
@@ -121,25 +123,24 @@ class MainGame(Screen):
         self.current_build_cost = 0
 
     def buy_part(self, item):
+        if self.is_bankrupt: return
+
         part_type = item["type"]
-        
-        # 1. เช็คเงิน
         if self.money < item["price"]:
             self.log_message = "NOT ENOUGH CASH!"
-            self.log_color = [0.9, 0.1, 0.1, 0.8] # เปลี่ยนเป็นสีแดง
+            self.log_color = [0.9, 0.1, 0.1, 0.8]
             self.play_error_sfx()
             return
         
-        # 2. เช็คความเข้ากันได้ของ Socket
         if part_type == "CPU" and self.installed_parts["MB"] and item["socket"] != self.installed_parts["MB"]["socket"]:
             self.log_message = "SOCKET MISMATCH!"
-            self.log_color = [0.9, 0.1, 0.1, 0.8] # เปลี่ยนเป็นสีแดง
+            self.log_color = [0.9, 0.1, 0.1, 0.8]
             self.play_error_sfx()
             return
             
         if part_type == "MB" and self.installed_parts["CPU"] and item["socket"] != self.installed_parts["CPU"]["socket"]:
             self.log_message = "SOCKET MISMATCH!"
-            self.log_color = [0.9, 0.1, 0.1, 0.8] # เปลี่ยนเป็นสีแดง
+            self.log_color = [0.9, 0.1, 0.1, 0.8]
             self.play_error_sfx()
             return
         
@@ -157,16 +158,13 @@ class MainGame(Screen):
                 self.play_error_sfx()
                 return
 
-        # ถ้าผ่านเงื่อนไขหมด ค่อยเล่นเสียงซื้อของสำเร็จ
         self.play_sfx()
 
-        # ถอดของเก่าคืนเงิน
         old = self.installed_parts[part_type]
         if old:
             self.money += old["price"]; self.current_build_cost -= old["price"]
             if "watt" in old: self.total_wattage -= old["watt"]
 
-        # ติดตั้งของใหม่
         self.installed_parts[part_type] = item
         self.money -= item["price"]; self.current_build_cost += item["price"]
         if "watt" in item: self.total_wattage += item["watt"]
@@ -174,7 +172,6 @@ class MainGame(Screen):
         self.budget_remaining = self.current_order_specs["budget"] - self.current_build_cost
         setattr(self, f"installed_{part_type.lower()}", item["name"])
         
-        # เปลี่ยนข้อความและสีกลับเป็นสีฟ้าปกติ
         self.log_message = f"Installed {item['name']}"
         self.log_color = [0, 0.4, 0.8, 0.5] 
         self.update_status()
@@ -185,15 +182,16 @@ class MainGame(Screen):
             psu = self.installed_parts["PSU"]
             if self.total_wattage <= (psu["watt_limit"] * 0.8): 
                 self.pc_status = "Ready to sell!"
-                self.power_bg_color = [0.1, 0.4, 0.2, 0.9]  # เปลี่ยนกรอบเป็นสีเขียว
+                self.power_bg_color = [0.1, 0.4, 0.2, 0.9]
             else: 
                 self.pc_status = "Power overload!"
-                self.power_bg_color = [0.8, 0.1, 0.1, 0.9]  # เปลี่ยนกรอบเป็นสีแดง
+                self.power_bg_color = [0.8, 0.1, 0.1, 0.9]
         else: 
             self.pc_status = "Incomplete"
-            self.power_bg_color = [0.1, 0.1, 0.15, 0.9]  # กลับเป็นสีเทาปกติ
+            self.power_bg_color = [0.1, 0.1, 0.15, 0.9]
 
     def on_sell_pc(self):
+        if self.is_bankrupt: return
         self.play_sfx()
         if self.pc_status != "Ready to sell!": return
         
@@ -216,73 +214,89 @@ class MainGame(Screen):
         if self.money >= 10000:
             self.log_message = "WINNER! You reached $10,000! Tycoon Master!"
             self.log_color = [1, 0.8, 0, 1]
+            self.is_winner = True
 
     def skip_order(self):
+        if self.is_bankrupt or self.is_winner: return
         self.play_sfx()
+        
+        # คืนเงินค่าอะไหล่บนโต๊ะ
         for k, v in self.installed_parts.items():
             if v: self.money += v["price"]
+            
+        # หักเงินค่าปรับทิ้งงาน และหักชื่อเสียง
+        self.money -= 200   # <--- หักเงิน 200 ทุกครั้งที่กด Skip (เอาไว้โชว์อาจารย์)
         self.reputation = max(0, self.reputation - 5)
-        self.log_message = "Skipped client."
+        self.log_message = "Skipped client. Penalty: -$200"
+        self.log_color = [0.9, 0.5, 0.1, 1] # แจ้งเตือนสีส้ม
+        
+        # ถ้ายอมจ่ายค่าปรับจนเงินติดลบ ให้ล้มละลายทันที!
+        if self.money < 0:
+            self.daily_event = "BANKRUPT! Out of business."
+            self.event_color = [1, 0.2, 0.2, 1]
+            self.log_message = "GAME OVER. Please Start New Game."
+            self.log_color = [1, 0, 0, 1]
+            self.customers_today = 0
+            self.is_bankrupt = True
+            return
+
         self.check_next_customer()
 
+    def add_test_money(self):
+        if self.is_bankrupt: return
+        self.play_sfx()
+        self.money += 5000
+        self.log_message = "CHEAT: Added $5,000!"
+        self.log_color = [0, 0.8, 0, 1]
+        
+        if self.money >= 10000:
+            self.log_message = "WINNER! You reached $10,000! Tycoon Master!"
+            self.log_color = [1, 0.8, 0, 1]
+
     def next_day(self):
-        # 1. เปลี่ยนวันและหักค่าเช่า
         self.current_day += 1
         self.money -= self.daily_rent
         
-        # 2. ระบบสุ่ม Event แบบใหม่ (ใช้ความน่าจะเป็น)
         event_roll = random.randint(1, 100)
-        
         if event_roll <= 40:
-            # โอกาส 40%: วันธรรมดา
             self.daily_event = "Normal Day. Business as usual."
             self.event_color = [0, 1, 1, 1]
             self.customers_today = random.randint(1, 3)
-            
         elif event_roll <= 55:
-            # โอกาส 15%: งานแฟร์ ลูกค้าเยอะขึ้นและได้ชื่อเสียง
             self.daily_event = "Tech Expo! +5 Reputation."
             self.event_color = [0.2, 1, 0.2, 1]
             self.reputation = min(100, self.reputation + 5)
             self.customers_today = random.randint(2, 4)
-            
         elif event_roll <= 70:
-            # โอกาส 15%: วันเงียบเหงา ลูกค้าน้อย
             self.daily_event = "Quiet day. Not many people."
             self.event_color = [0, 1, 1, 1]
             self.customers_today = 1
-            
         elif event_roll <= 80:
-            # โอกาส 10%: กระแสคริปโตมาแรง ลูกค้าแห่มาซื้อคอม
             self.daily_event = "Crypto Boom! High demand."
             self.event_color = [0, 1, 1, 1]
             self.customers_today = random.randint(3, 5)
-            
         elif event_roll <= 90:
-            # โอกาส 10%: โดนรีวิวแย่ เสียชื่อเสียง
             self.daily_event = "Bad Reviews! -5 Reputation."
             self.event_color = [1, 0.2, 0.2, 1]
             self.reputation = max(0, self.reputation - 5)
             self.customers_today = random.randint(1, 2)
-            
         else:
-            # โอกาส 10%: ซวยโดนเก็บค่าไฟ/ค่าเช่าเพิ่ม
             self.daily_event = "Extra Bills! Lost $50."
             self.event_color = [1, 0.2, 0.2, 1]
             self.money -= 50
             self.customers_today = random.randint(1, 3)
             
-        # 3. เคลียร์โต๊ะและเรียกลูกค้าคนแรกของวัน
         self.clear_bench()
         self.generate_new_order()
         self.save_game()
 
         if self.money < 0:
             self.daily_event = "BANKRUPT! Out of business."
-            # หากมีตัวแปร event_color ให้ใส่: self.event_color = [1, 0, 0, 1]
+            self.event_color = [1, 0.2, 0.2, 1]
             self.log_message = "GAME OVER. Please Start New Game."
             self.log_color = [1, 0, 0, 1]
             self.customers_today = 0
+            self.is_bankrupt = True
     
     def clear_bench(self):
         self.installed_parts = {k: None for k in ["CPU","MB","GPU","RAM","PSU","Storage","Case"]}
@@ -319,13 +333,24 @@ class MainGame(Screen):
                 self.total_wattage = self.base_system_watt + sum(p.get("watt", 0) for p in self.installed_parts.values() if p)
             for p in ["CPU","MB","GPU","RAM","PSU","Storage","Case"]:
                 setattr(self, f"installed_{p.lower()}", self.installed_parts[p]["name"] if self.installed_parts[p] else "None")
-            self.update_status(); return True
+            self.update_status()
+            
+            # โหลดมาแล้วเช็กด้วยว่าเงินติดลบไหม
+            if self.money < 0:
+                self.is_bankrupt = True
+            else:
+                self.is_bankrupt = False
+                
+            return True
         except: return False
 
     def reset_game(self):
         self.money = 3000; self.current_day = 1; self.reputation = 50
+        self.is_bankrupt = False
+        self.is_winner = False
         self.clear_bench()
         self.log_message = "New Game Started!"
+        self.log_color = [0, 0.4, 0.8, 0.5]
         self.generate_new_order()
         self.save_game()
 
@@ -352,14 +377,13 @@ class PCBuilderApp(App):
     def on_music_volume(self, instance, value):
         if self.bgm: self.bgm.volume = value
 
-    # ---> ก๊อปปี้ฟังก์ชันนี้ไปวางต่อท้ายใน class PCBuilderApp <---
     def on_keyboard(self, window, key, scancode, codepoint, modifier):
-        if key == 292:  # รหัส 292 คือปุ่ม F11 ใน Kivy
+        if key == 292: 
             if Window.fullscreen == False:
                 Window.fullscreen = 'auto'
             else:
                 Window.fullscreen = False
-            return True  # คืนค่า True เพื่อบอกว่าระบบรับทราบการกดปุ่มนี้แล้ว
+            return True
         return False
 
 if __name__ == "__main__":
