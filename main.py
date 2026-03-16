@@ -46,7 +46,7 @@ class MainGame(Screen):
     money = NumericProperty(3000)
     current_day = NumericProperty(1)
     daily_rent = NumericProperty(100)
-    reputation = NumericProperty(50)
+    reputation = NumericProperty(5)
     pc_status = StringProperty("Empty")
     log_message = StringProperty("Neon Workshop Active.")
     current_order = StringProperty("")
