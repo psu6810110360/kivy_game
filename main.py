@@ -346,7 +346,7 @@ class MainGame(Screen):
         except: return False
 
     def reset_game(self):
-        self.money = 3000; self.current_day = 1; self.reputation = 50
+        self.money = 3000; self.current_day = 1; self.reputation = 5
         self.is_bankrupt = False
         self.is_winner = False
         self.daily_event = "Normal Day"
